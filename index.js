@@ -43,5 +43,5 @@ res.end();
 });
 
 server.listen(process.env.PORT,() => {
- console.log("Application is listening on port " + process.env.PORT);
+ console.log("\x1b[32m%s\x1b[0m","Application is listening on port " + process.env.PORT);
 })
