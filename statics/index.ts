@@ -59,7 +59,7 @@ const GLOBAL_SETTINGS: {
  } = {
   charWidth: 15,
   charHeight: 15,
-  controlSize: 25,
+  controlSize: 20,
   joystickSize: undefined,
   scale: 3,
   maxWidth: 10000,
@@ -304,12 +304,17 @@ window.addEventListener("touchmove", (e) => {
 
 const GLOBAL_ELEMENTS: Array<any> = [];
 
+// Put other player objects here for management and rendering...
+// Oragnized by <username>:<OtherCharacter instance>
+
+const PLAYERS: object = {};
+
 // Defining positional types...
 
 type eyePosType = "open" | "closed";
 type handPosType = "top" | "middle" | "bottom";
 
-// Class for creating character instances...
+// Interface for creating character instances...
 
 interface Characters {
 width: number;
@@ -318,6 +323,10 @@ eyePos: eyePosType;
 rotation: number;
 running: boolean | number;
 eyeDim: number;
+username: string;
+speed?: number;
+posX?: number;
+posY?: number;
 handWidth: number;
 handHeight: number;
 handPos: handPosType;
@@ -328,12 +337,263 @@ readonly drawEyes: () => void;
 readonly render: () => void;
 }
 
+// Class for other players...
+
+class OtherCharacter implements Characters {
+  constructor (x: number, y: number,rotation: number,username: string) {
+    this.posX = x;
+    this.posY = y;
+    this.x = GLOBAL_SETTINGS.percent(x,true) - this.width/2;
+    this.y = GLOBAL_SETTINGS.percent(y,true) - this.height/2;
+    this.fixedCenter = {
+      x: this.x + this.width / 2,
+      y: this.y + this.height / 2
+    };
+this.rotation = rotation || 0;
+this.username = username;
+  }
+ 
+  x;
+  y;
+  posX;
+  posY;
+  fixedCenter;
+  rotation;
+  username;
+  width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
+  height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
+  eyePos: eyePosType = "open";
+  running: boolean | number = false;
+  speed: number = 0.1;
+  eyeDim = GLOBAL_SETTINGS.percent(3, true);
+  handWidth = GLOBAL_SETTINGS.percent(4, true);
+  handHeight = GLOBAL_SETTINGS.percent(4, true);
+  handPos: handPosType = "middle";
+  blink = setInterval(() => {
+    this.eyePos = "closed";
+    setTimeout(() => {
+      this.eyePos = "open";
+    }, 1000);
+  }, 6000);
+
+recalculate(x?: number, y?: number): void {
+    this.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
+    this.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true); 
+     this.x = GLOBAL_SETTINGS.percent(this.posX,true) - this.width/2;
+    this.y = GLOBAL_SETTINGS.percent(this.posY,true) - this.height/2; 
+       this.handWidth = GLOBAL_SETTINGS.percent(4, true);
+    this.handHeight = GLOBAL_SETTINGS.percent(4, true);
+    this.eyeDim = GLOBAL_SETTINGS.percent(3, true);
+  }
+
+  drawHands(): void {
+
+   let x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
+    let y = GLOBAL_SETTINGS.mapAnchor.y + this.y; 
+
+    ctx.lineWidth = 4;
+    if (this.handPos == "middle") {
+      ctx.strokeRect(
+        x - this.handWidth - 1,
+        y + this.height / 2 - this.handHeight / 2,
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.strokeRect(
+        x + this.width + 1,
+        y + this.height / 2 - this.handHeight / 2,
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.fillRect(
+        x - this.handWidth - 1,
+        y + this.height / 2 - this.handHeight / 2,
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.fillRect(
+        x + this.width + 1,
+        y + this.height / 2 - this.handHeight / 2,
+        this.handWidth,
+        this.handHeight
+      );
+    } else if (this.handPos == "top") {
+      ctx.strokeRect(
+        x - this.handWidth - 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 -
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.strokeRect(
+        x + this.width + 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 +
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.fillRect(
+        x - this.handWidth - 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 -
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.fillRect(
+        x + this.width + 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 +
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+    } else {
+      ctx.strokeRect(
+        x - this.handWidth - 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 +
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.strokeRect(
+        x + this.width + 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 -
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.fillRect(
+        x - this.handWidth - 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 +
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+      ctx.fillRect(
+        x + this.width + 1,
+        y +
+          this.height / 2 -
+          this.handHeight / 2 -
+          GLOBAL_SETTINGS.percent(2, true),
+        this.handWidth,
+        this.handHeight
+      );
+    }
+  }
+
+  drawEyes(): void {
+
+   let x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
+    let y = GLOBAL_SETTINGS.mapAnchor.y + this.y; 
+
+    ctx.fillStyle = "black";
+    if (this.eyePos == "open") {
+      ctx.fillRect(
+        x + this.width / 5,
+        y,
+        this.eyeDim,
+        this.eyeDim
+      );
+      ctx.fillRect(
+        x + (this.width / 5) * 3,
+        y,
+        this.eyeDim,
+        this.eyeDim
+      );
+    } else {
+      ctx.fillRect(
+        x + this.width / 5,
+        y + this.eyeDim / 2,
+        this.eyeDim,
+        this.eyeDim / 4
+      );
+      ctx.fillRect(
+        x + (this.width / 5) * 3,
+        y + this.eyeDim / 2,
+        this.eyeDim,
+        this.eyeDim / 4
+      );
+    }
+  }
+
+render(): void { 
+
+     let x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
+     let y = GLOBAL_SETTINGS.mapAnchor.y + this.y; 
+
+    ctx.beginPath();
+    setDefaults();
+    ctx.restore();
+    ctx.save();
+    ctx.translate(x + this.width/2, y + this.height/2);
+    ctx.rotate(this.rotation);
+    ctx.translate(-x + -(this.width/2), -y + -(this.height/2));
+    ctx.fillStyle = "white";
+    ctx.fillRect(x, y, this.width, this.height);
+    ctx.strokeRect(x, y, this.width, this.height);
+    setDefaults();
+    this.drawEyes();
+    setDefaults();
+
+    // Start running animation if left joystick is active:
+
+    if (this.running) {
+      let time = 200 - this.speed * 100 + 100;
+
+      this.running = setInterval(() => {
+        this.handPos = "middle";
+        setTimeout(() => {
+          this.handPos = "top";
+          setTimeout(() => {
+            this.handPos = "bottom";
+            setTimeout(() => {
+              this.handPos = "middle";
+            }, time / 3);
+          }, time / 3);
+        }, time / 3);
+      }, time);
+    } else if (!this.running) {
+      clearInterval(this.running as number);
+      this.running = false;
+    }
+
+    this.drawHands();
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.font = "15px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText(this.username,x + this.width/2,y - GLOBAL_SETTINGS.percent(8,true));
+    setDefaults();
+    ctx.restore();
+    ctx.save();
+   ctx.beginPath();
+  }
+
+}
+
+// Class for main characters...
+
 class MainCharacter implements Characters {
-  constructor (x?: number, y?: number) {
+  constructor (username: string,x?: number, y?: number) {
     this.x = x || GLOBAL_SETTINGS.maxWidth - this.width / 2;
     this.y = y || GLOBAL_SETTINGS.maxHeight - this.height / 2;
     this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;
     this.fixedY = GLOBAL_SETTINGS.height / 2 - this.height / 2;
+    this.username = username;
     this.fixedCenter = {
       x: this.fixedX + this.width / 2,
       y: this.fixedY + this.height / 2
@@ -345,6 +605,7 @@ class MainCharacter implements Characters {
   fixedX;
   fixedY;
   fixedCenter;
+  username;
   width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
   height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
   eyePos: eyePosType = "open";
@@ -515,6 +776,9 @@ class MainCharacter implements Characters {
   }
 
   render(): void {
+setDefaults();
+ctx.restore();
+ctx.save();
     this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;
     this.fixedY = GLOBAL_SETTINGS.height / 2 - this.height / 2;
 
@@ -556,13 +820,21 @@ class MainCharacter implements Characters {
     }
 
     this.drawHands();
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.font = "15px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText(this.username,this.fixedCenter.x,this.fixedCenter.y - GLOBAL_SETTINGS.percent(8,true) - this.height/2);
     setDefaults();
     ctx.restore();
     ctx.save();
-  }
+  } 
 }
 
-const MAIN_CHARACTER = new MainCharacter();
+// Defining main character instance...
+
+const MAIN_CHARACTER = new MainCharacter("ZippCodder Lv.0.1");
 
 // Auto Resizing Control...
 
@@ -634,18 +906,26 @@ const start: Function = (): void => {
 };
 
 function render(): void {
+// Clear canvas...
   ctx.clearRect(0, 0, GLOBAL_SETTINGS.width, GLOBAL_SETTINGS.height);
 
+// Render background...
   if (BACKGROUND) {
     BACKGROUND.render();
   }
 
-  if (GLOBAL_ELEMENTS.length) {
+// Render characters...
+  for (player in PLAYERS) player.render();
+
+// Render objects...
+   if (GLOBAL_ELEMENTS.length) {
     for (let OBJ of GLOBAL_ELEMENTS) OBJ.render()!;
   }
 
+// Render main character...
   MAIN_CHARACTER.render();
 
+// Render controls...
   if (LEFT_CONTROL?.active) {
     LEFT_CONTROL.render();
     let { mapAnchor, speed, percent } = GLOBAL_SETTINGS;
@@ -675,6 +955,7 @@ function render(): void {
     RIGHT_CONTROL.render();
   }
 
+// Call next frame...
   requestAnimationFrame(render);
 }
 

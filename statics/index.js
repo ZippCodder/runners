@@ -27,7 +27,7 @@ ctx.save();
 var GLOBAL_SETTINGS = {
     charWidth: 15,
     charHeight: 15,
-    controlSize: 25,
+    controlSize: 20,
     joystickSize: undefined,
     scale: 3,
     maxWidth: 10000,
@@ -202,8 +202,159 @@ window.addEventListener("touchmove", function (e) {
 });
 // Put other objects here for rendering...
 var GLOBAL_ELEMENTS = [];
+// Class for other players...
+var OtherCharacter = /** @class */ (function () {
+    function OtherCharacter(x, y, rotation, username) {
+        var _this = this;
+        this.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
+        this.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
+        this.eyePos = "open";
+        this.running = false;
+        this.speed = 0.1;
+        this.eyeDim = GLOBAL_SETTINGS.percent(3, true);
+        this.handWidth = GLOBAL_SETTINGS.percent(4, true);
+        this.handHeight = GLOBAL_SETTINGS.percent(4, true);
+        this.handPos = "middle";
+        this.blink = setInterval(function () {
+            _this.eyePos = "closed";
+            setTimeout(function () {
+                _this.eyePos = "open";
+            }, 1000);
+        }, 6000);
+        this.posX = x;
+        this.posY = y;
+        this.x = GLOBAL_SETTINGS.percent(x, true) - this.width / 2;
+        this.y = GLOBAL_SETTINGS.percent(y, true) - this.height / 2;
+        this.fixedCenter = {
+            x: this.x + this.width / 2,
+            y: this.y + this.height / 2
+        };
+        this.rotation = rotation || 0;
+        this.username = username;
+    }
+    OtherCharacter.prototype.recalculate = function (x, y) {
+        this.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
+        this.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
+        this.x = GLOBAL_SETTINGS.percent(this.posX, true) - this.width / 2;
+        this.y = GLOBAL_SETTINGS.percent(this.posY, true) - this.height / 2;
+        this.handWidth = GLOBAL_SETTINGS.percent(4, true);
+        this.handHeight = GLOBAL_SETTINGS.percent(4, true);
+        this.eyeDim = GLOBAL_SETTINGS.percent(3, true);
+    };
+    OtherCharacter.prototype.drawHands = function () {
+        var x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
+        var y = GLOBAL_SETTINGS.mapAnchor.y + this.y;
+        ctx.lineWidth = 4;
+        if (this.handPos == "middle") {
+            ctx.strokeRect(x - this.handWidth - 1, y + this.height / 2 - this.handHeight / 2, this.handWidth, this.handHeight);
+            ctx.strokeRect(x + this.width + 1, y + this.height / 2 - this.handHeight / 2, this.handWidth, this.handHeight);
+            ctx.fillRect(x - this.handWidth - 1, y + this.height / 2 - this.handHeight / 2, this.handWidth, this.handHeight);
+            ctx.fillRect(x + this.width + 1, y + this.height / 2 - this.handHeight / 2, this.handWidth, this.handHeight);
+        }
+        else if (this.handPos == "top") {
+            ctx.strokeRect(x - this.handWidth - 1, y +
+                this.height / 2 -
+                this.handHeight / 2 -
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+            ctx.strokeRect(x + this.width + 1, y +
+                this.height / 2 -
+                this.handHeight / 2 +
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+            ctx.fillRect(x - this.handWidth - 1, y +
+                this.height / 2 -
+                this.handHeight / 2 -
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+            ctx.fillRect(x + this.width + 1, y +
+                this.height / 2 -
+                this.handHeight / 2 +
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+        }
+        else {
+            ctx.strokeRect(x - this.handWidth - 1, y +
+                this.height / 2 -
+                this.handHeight / 2 +
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+            ctx.strokeRect(x + this.width + 1, y +
+                this.height / 2 -
+                this.handHeight / 2 -
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+            ctx.fillRect(x - this.handWidth - 1, y +
+                this.height / 2 -
+                this.handHeight / 2 +
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+            ctx.fillRect(x + this.width + 1, y +
+                this.height / 2 -
+                this.handHeight / 2 -
+                GLOBAL_SETTINGS.percent(2, true), this.handWidth, this.handHeight);
+        }
+    };
+    OtherCharacter.prototype.drawEyes = function () {
+        var x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
+        var y = GLOBAL_SETTINGS.mapAnchor.y + this.y;
+        ctx.fillStyle = "black";
+        if (this.eyePos == "open") {
+            ctx.fillRect(x + this.width / 5, y, this.eyeDim, this.eyeDim);
+            ctx.fillRect(x + (this.width / 5) * 3, y, this.eyeDim, this.eyeDim);
+        }
+        else {
+            ctx.fillRect(x + this.width / 5, y + this.eyeDim / 2, this.eyeDim, this.eyeDim / 4);
+            ctx.fillRect(x + (this.width / 5) * 3, y + this.eyeDim / 2, this.eyeDim, this.eyeDim / 4);
+        }
+    };
+    OtherCharacter.prototype.render = function () {
+        var _this = this;
+        var x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
+        var y = GLOBAL_SETTINGS.mapAnchor.y + this.y;
+        ctx.beginPath();
+        setDefaults();
+        ctx.restore();
+        ctx.save();
+        ctx.translate(x + this.width / 2, y + this.height / 2);
+        ctx.rotate(this.rotation);
+        ctx.translate(-x + -(this.width / 2), -y + -(this.height / 2));
+        ctx.fillStyle = "white";
+        ctx.fillRect(x, y, this.width, this.height);
+        ctx.strokeRect(x, y, this.width, this.height);
+        setDefaults();
+        this.drawEyes();
+        setDefaults();
+        // Start running animation if left joystick is active:
+        if (this.running) {
+            var time_1 = 200 - this.speed * 100 + 100;
+            this.running = setInterval(function () {
+                _this.handPos = "middle";
+                setTimeout(function () {
+                    _this.handPos = "top";
+                    setTimeout(function () {
+                        _this.handPos = "bottom";
+                        setTimeout(function () {
+                            _this.handPos = "middle";
+                        }, time_1 / 3);
+                    }, time_1 / 3);
+                }, time_1 / 3);
+            }, time_1);
+        }
+        else if (!this.running) {
+            clearInterval(this.running);
+            this.running = false;
+        }
+        this.drawHands();
+        ctx.restore();
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.font = "15px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText(this.username, x + this.width / 2, y - GLOBAL_SETTINGS.percent(8, true));
+        setDefaults();
+        ctx.restore();
+        ctx.save();
+        ctx.beginPath();
+    };
+    return OtherCharacter;
+}());
+// Class for main characters...
 var MainCharacter = /** @class */ (function () {
-    function MainCharacter(x, y) {
+    function MainCharacter(username, x, y) {
         var _this = this;
         this.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
         this.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
@@ -224,6 +375,7 @@ var MainCharacter = /** @class */ (function () {
         this.y = y || GLOBAL_SETTINGS.maxHeight - this.height / 2;
         this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;
         this.fixedY = GLOBAL_SETTINGS.height / 2 - this.height / 2;
+        this.username = username;
         this.fixedCenter = {
             x: this.fixedX + this.width / 2,
             y: this.fixedY + this.height / 2
@@ -303,6 +455,9 @@ var MainCharacter = /** @class */ (function () {
     };
     MainCharacter.prototype.render = function () {
         var _this = this;
+        setDefaults();
+        ctx.restore();
+        ctx.save();
         this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;
         this.fixedY = GLOBAL_SETTINGS.height / 2 - this.height / 2;
         setDefaults();
@@ -319,7 +474,7 @@ var MainCharacter = /** @class */ (function () {
         setDefaults();
         // Start running animation if left joystick is active:
         if (!this.running && (LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.distance) > 0) {
-            var time_1 = 200 - GLOBAL_SETTINGS.speed * 100 + 100;
+            var time_2 = 200 - GLOBAL_SETTINGS.speed * 100 + 100;
             this.running = setInterval(function () {
                 _this.handPos = "middle";
                 setTimeout(function () {
@@ -328,23 +483,31 @@ var MainCharacter = /** @class */ (function () {
                         _this.handPos = "bottom";
                         setTimeout(function () {
                             _this.handPos = "middle";
-                        }, time_1 / 3);
-                    }, time_1 / 3);
-                }, time_1 / 3);
-            }, time_1);
+                        }, time_2 / 3);
+                    }, time_2 / 3);
+                }, time_2 / 3);
+            }, time_2);
         }
         else if (this.running && !(LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.distance)) {
             clearInterval(this.running);
             this.running = false;
         }
         this.drawHands();
+        ctx.restore();
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.font = "15px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText(this.username, this.fixedCenter.x, this.fixedCenter.y - GLOBAL_SETTINGS.percent(8, true) - this.height / 2);
         setDefaults();
         ctx.restore();
         ctx.save();
     };
     return MainCharacter;
 }());
-var MAIN_CHARACTER = new MainCharacter();
+// Defining main character instance...
+var MAIN_CHARACTER = new MainCharacter("ZippCodder Lv.0.1");
+GLOBAL_ELEMENTS.push(new OtherCharacter(23, 31, 45, "Zayan Lv.2"));
 // Auto Resizing Control...
 window.addEventListener("resize", function () {
     resize();

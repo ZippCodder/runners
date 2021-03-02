@@ -1,6 +1,5 @@
 const http = require("http");
 const fs = require("fs");
-require("dotenv").config();
 
 const server = http.createServer();
 
