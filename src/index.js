@@ -88,7 +88,7 @@ var CONTROL = /** @class */ (function () {
         ctx.globalAlpha = 0.5;
         ctx.fill();
         ctx.stroke();
-        if (this.mouseX && this.mouseY) {
+        if (this.mouseX && this.mouseY && GLOBAL_SETTINGS.joystickSize) {
             ctx.beginPath();
             ctx.arc(this.mouseX, this.mouseY, GLOBAL_SETTINGS.joystickSize / 2 || 10, 0, 2 * Math.PI);
             ctx.fillStyle = "gray";
@@ -154,7 +154,7 @@ window.addEventListener("touchend", function (e) {
 // Update joystick and character movements...
 window.addEventListener("touchmove", function (e) {
     function calc(CONTROLS) {
-        if (e.touches[CONTROLS.touch]) {
+        if (CONTROLS.touch && e.touches[CONTROLS.touch]) {
             var _a = e.touches[CONTROLS.touch], pageX = _a.pageX, pageY = _a.pageY;
             var quad = void 0;
             var distance = Math.round(Math.sqrt(Math.pow(pageX - CONTROLS.mouseCenter.x, 2) +
@@ -202,6 +202,9 @@ window.addEventListener("touchmove", function (e) {
 });
 // Put other objects here for rendering...
 var GLOBAL_ELEMENTS = [];
+// Put other player objects here for management and rendering...
+// Oragnized by <username>:<OtherCharacter instance>
+var PLAYERS = {};
 // Class for other players...
 var OtherCharacter = /** @class */ (function () {
     function OtherCharacter(x, y, rotation, username) {
@@ -334,7 +337,7 @@ var OtherCharacter = /** @class */ (function () {
                 }, time_1 / 3);
             }, time_1);
         }
-        else if (!this.running) {
+        else {
             clearInterval(this.running);
             this.running = false;
         }
@@ -464,7 +467,9 @@ var MainCharacter = /** @class */ (function () {
         ctx.restore();
         ctx.save();
         ctx.translate(this.fixedCenter.x, this.fixedCenter.y);
-        ctx.rotate(-(RIGHT_CONTROL === null || RIGHT_CONTROL === void 0 ? void 0 : RIGHT_CONTROL.angle) || -(LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.angle) || this.rotation || 0);
+        if ((RIGHT_CONTROL === null || RIGHT_CONTROL === void 0 ? void 0 : RIGHT_CONTROL.angle) || (LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.angle)) {
+            ctx.rotate(-(RIGHT_CONTROL === null || RIGHT_CONTROL === void 0 ? void 0 : RIGHT_CONTROL.angle) || -(LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.angle) || this.rotation || 0);
+        }
         ctx.translate(-this.fixedCenter.x, -this.fixedCenter.y);
         ctx.fillStyle = "white";
         ctx.fillRect(this.fixedX, this.fixedY, this.width, this.height);
@@ -473,7 +478,7 @@ var MainCharacter = /** @class */ (function () {
         this.drawEyes();
         setDefaults();
         // Start running animation if left joystick is active:
-        if (!this.running && (LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.distance) > 0) {
+        if (LEFT_CONTROL && !this.running && (LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.distance) > 0) {
             var time_2 = 200 - GLOBAL_SETTINGS.speed * 100 + 100;
             this.running = setInterval(function () {
                 _this.handPos = "middle";
@@ -507,7 +512,6 @@ var MainCharacter = /** @class */ (function () {
 }());
 // Defining main character instance...
 var MAIN_CHARACTER = new MainCharacter("ZippCodder Lv.0.1");
-GLOBAL_ELEMENTS.push(new OtherCharacter(23, 31, 45, "Zayan Lv.2"));
 // Auto Resizing Control...
 window.addEventListener("resize", function () {
     resize();
@@ -554,43 +558,54 @@ var start = function () {
     requestAnimationFrame(render);
 };
 function render() {
+    // Clear canvas...
     ctx.clearRect(0, 0, GLOBAL_SETTINGS.width, GLOBAL_SETTINGS.height);
+    // Render background...
     if (BACKGROUND) {
         BACKGROUND.render();
     }
+    // Render characters...
+    for (var player in PLAYERS)
+        PLAYERS[player].render();
+    // Render objects...
     if (GLOBAL_ELEMENTS.length) {
         for (var _i = 0, GLOBAL_ELEMENTS_2 = GLOBAL_ELEMENTS; _i < GLOBAL_ELEMENTS_2.length; _i++) {
             var OBJ = GLOBAL_ELEMENTS_2[_i];
             OBJ.render();
         }
     }
+    // Render main character...
     MAIN_CHARACTER.render();
+    // Render controls...
     if (LEFT_CONTROL === null || LEFT_CONTROL === void 0 ? void 0 : LEFT_CONTROL.active) {
         LEFT_CONTROL.render();
-        var mapAnchor = GLOBAL_SETTINGS.mapAnchor, speed = GLOBAL_SETTINGS.speed, percent = GLOBAL_SETTINGS.percent;
-        speed *= 5;
-        switch (LEFT_CONTROL.quad) {
-            case 0:
-                mapAnchor.x += speed;
-                mapAnchor.y += speed;
-                break;
-            case 1:
-                mapAnchor.x += speed;
-                mapAnchor.y -= speed;
-                break;
-            case 2:
-                mapAnchor.x -= speed;
-                mapAnchor.y -= speed;
-                break;
-            case 3:
-                mapAnchor.x -= speed;
-                mapAnchor.y += speed;
-                break;
+        var _a = GLOBAL_SETTINGS, mapAnchor = _a.mapAnchor, speed = _a.speed, percent = _a.percent;
+        if (speed) {
+            speed *= 5;
+            switch (LEFT_CONTROL.quad) {
+                case 0:
+                    mapAnchor.x += speed;
+                    mapAnchor.y += speed;
+                    break;
+                case 1:
+                    mapAnchor.x += speed;
+                    mapAnchor.y -= speed;
+                    break;
+                case 2:
+                    mapAnchor.x -= speed;
+                    mapAnchor.y -= speed;
+                    break;
+                case 3:
+                    mapAnchor.x -= speed;
+                    mapAnchor.y += speed;
+                    break;
+            }
         }
     }
     if (RIGHT_CONTROL === null || RIGHT_CONTROL === void 0 ? void 0 : RIGHT_CONTROL.active) {
         RIGHT_CONTROL.render();
     }
+    // Call next frame...
     requestAnimationFrame(render);
 }
 // Start running the frames...

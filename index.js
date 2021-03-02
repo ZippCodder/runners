@@ -15,7 +15,7 @@ res.end();
 }
 });
 } else if (req.url == "/index.js") {
-  fs.readFile("./statics/index.js",(err,data) => {
+  fs.readFile("./dist/index.bundle.js",(err,data) => {
     if (!err) {
   res.setHeader("Content-Type","text/javascript");
   res.end(data);
@@ -25,7 +25,7 @@ res.end();
 }
 })
 } else if (req.url == "/style.css") {
-   fs.readFile("./statics/style.css",(err,data) => {
+   fs.readFile("./statics/style.bundle.css",(err,data) => {
      if (!err) {
   res.setHeader("Content-Type","text/css");
   res.end(data);

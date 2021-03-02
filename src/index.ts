@@ -4,12 +4,12 @@
 
 // Initial Canvas And Global Setup...
 
-const canvas = document.querySelector("canvas");
+const canvas = document.querySelector("canvas")!;
 canvas.onclick = () => {
   document.body.requestFullscreen();
 };
 
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d")!;
 
 // Default canvas settings...
 
@@ -40,11 +40,13 @@ ctx.save();
 
 // Common properties for accessability...
 
+type joystick = undefined | number;
+
 const GLOBAL_SETTINGS: {
   readonly charWidth: number;
   readonly charHeight: number;
   readonly controlSize: number;
-  joystickSize: undefined | number;
+  joystickSize: joystick;
   readonly scale: number;
   readonly speedFactor: number;
   speed: undefined | number;
@@ -71,7 +73,7 @@ const GLOBAL_SETTINGS: {
   prevDim: undefined,
   globalCenter: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
   mapAnchor: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-  percent: function (num: number, h: boolean, o: number): number {
+  percent: function (num: number, h?: boolean, o?: number): number {
     if (h) {
       return (
         ((num / 100) * GLOBAL_SETTINGS.height) / GLOBAL_SETTINGS.scale +
@@ -141,12 +143,13 @@ class CONTROL implements Control {
   angle = 0;
   quad = 0;
   distance = 0;
-  touch = undefined;
+  touch: number | undefined = undefined;
   mouseCenter = { x: 0, y: 0 };
   render() {
     setDefaults();
     ctx.moveTo(this.mouseCenter.x, this.mouseCenter.y);
     ctx.beginPath();
+if (GLOBAL_SETTINGS.joystickSize) {
     ctx.arc(
       this.mouseCenter.x,
       this.mouseCenter.y,
@@ -154,11 +157,13 @@ class CONTROL implements Control {
       0,
       2 * Math.PI
     );
+}
     ctx.globalAlpha = 0.5;
     ctx.fill();
     ctx.stroke();
-    if (this.mouseX && this.mouseY) {
+    if (this.mouseX && this.mouseY && GLOBAL_SETTINGS.joystickSize) {
       ctx.beginPath();
+if (GLOBAL_SETTINGS.joystickSize) {
       ctx.arc(
         this.mouseX,
         this.mouseY,
@@ -166,6 +171,7 @@ class CONTROL implements Control {
         0,
         2 * Math.PI
       );
+}
       ctx.fillStyle = "gray";
       ctx.globalAlpha = 0.5;
       ctx.fill();
@@ -176,7 +182,7 @@ class CONTROL implements Control {
 
 // Left and right joystick...
 
-let LEFT_CONTROL: Control, RIGHT_CONTROL: Control;
+let LEFT_CONTROL: Control | undefined, RIGHT_CONTROL: Control | undefined;
 
 // Anchor and render joysticks...
 
@@ -213,7 +219,7 @@ window.addEventListener("touchstart", (e) => {
 // Hide joysticks and stop character movements...
 
 window.addEventListener("touchend", (e) => {
-  if (e.touches.length == 1) {
+  if (LEFT_CONTROL && RIGHT_CONTROL && e.touches && e.touches.length == 1) {
     if (e.touches[0].pageX > window.innerWidth / 2) {
       LEFT_CONTROL.distance = 0;
       MAIN_CHARACTER.rotation = -LEFT_CONTROL?.angle;
@@ -239,8 +245,8 @@ window.addEventListener("touchend", (e) => {
 
 window.addEventListener("touchmove", (e) => {
   function calc(CONTROLS: Control): void {
-    if (e.touches[CONTROLS.touch]) {
-      let { pageX, pageY } = e.touches[CONTROLS.touch];
+    if (CONTROLS.touch && e.touches[CONTROLS.touch]!) {
+      let { pageX, pageY } = e.touches[CONTROLS.touch]!;
       let quad;
 
       let distance = Math.round(
@@ -284,7 +290,7 @@ window.addEventListener("touchmove", (e) => {
 
       CONTROLS.quad = quad;
 
-      if (distance < GLOBAL_SETTINGS.joystickSize) {
+      if (GLOBAL_SETTINGS.joystickSize && distance < GLOBAL_SETTINGS.joystickSize) {
         CONTROLS.mouseX = pageX;
         CONTROLS.mouseY = pageY;
         CONTROLS.angle = (angle * Math.PI) / 180;
@@ -307,12 +313,13 @@ const GLOBAL_ELEMENTS: Array<any> = [];
 // Put other player objects here for management and rendering...
 // Oragnized by <username>:<OtherCharacter instance>
 
-const PLAYERS: object = {};
+const PLAYERS: {[index: string]: {render: Function}} = {};
 
 // Defining positional types...
 
 type eyePosType = "open" | "closed";
 type handPosType = "top" | "middle" | "bottom";
+type timeout = ReturnType<typeof setTimeout>;
 
 // Interface for creating character instances...
 
@@ -321,16 +328,19 @@ width: number;
 height: number;
 eyePos: eyePosType;
 rotation: number;
-running: boolean | number;
+running: boolean | timeout;
 eyeDim: number;
 username: string;
 speed?: number;
 posX?: number;
 posY?: number;
+x: number;
+y: number;
 handWidth: number;
 handHeight: number;
+fixedCenter: {x: number, y: number};
 handPos: handPosType;
-readonly blink: number;
+readonly blink: timeout;
 readonly recalculate: () => void;
 readonly drawHands: () => void;
 readonly drawEyes: () => void;
@@ -353,23 +363,23 @@ this.rotation = rotation || 0;
 this.username = username;
   }
  
-  x;
-  y;
-  posX;
-  posY;
-  fixedCenter;
-  rotation;
-  username;
+  x: number;
+  y: number;
+  posX: number;
+  posY: number;
+  fixedCenter: {x: number,y: number};
+  rotation: number;
+  username: string;
   width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
   height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
   eyePos: eyePosType = "open";
-  running: boolean | number = false;
+  running: boolean | timeout = false;
   speed: number = 0.1;
   eyeDim = GLOBAL_SETTINGS.percent(3, true);
   handWidth = GLOBAL_SETTINGS.percent(4, true);
   handHeight = GLOBAL_SETTINGS.percent(4, true);
   handPos: handPosType = "middle";
-  blink = setInterval(() => {
+  blink: timeout = setInterval(() => {
     this.eyePos = "closed";
     setTimeout(() => {
       this.eyePos = "open";
@@ -565,10 +575,7 @@ render(): void {
           }, time / 3);
         }, time / 3);
       }, time);
-    } else if (!this.running) {
-      clearInterval(this.running as number);
-      this.running = false;
-    }
+    } 
 
     this.drawHands();
     ctx.restore();
@@ -600,22 +607,22 @@ class MainCharacter implements Characters {
     };
   }
  
-  x;
-  y;
-  fixedX;
-  fixedY;
-  fixedCenter;
-  username;
+  x: number;
+  y: number;
+  fixedX: number;
+  fixedY: number;
+  fixedCenter: {x: number,y: number};
+  username: string;
   width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
   height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true);
   eyePos: eyePosType = "open";
   rotation = 0;
-  running: boolean | number = false;
+  running: boolean | timeout = false;
   eyeDim = GLOBAL_SETTINGS.percent(3, true);
   handWidth = GLOBAL_SETTINGS.percent(4, true);
   handHeight = GLOBAL_SETTINGS.percent(4, true);
   handPos: handPosType = "middle";
-  blink = setInterval(() => {
+  blink: timeout = setInterval(() => {
     this.eyePos = "closed";
     setTimeout(() => {
       this.eyePos = "open";
@@ -786,9 +793,11 @@ ctx.save();
     ctx.restore();
     ctx.save();
     ctx.translate(this.fixedCenter.x, this.fixedCenter.y);
+if (RIGHT_CONTROL && LEFT_CONTROL && (RIGHT_CONTROL?.angle || LEFT_CONTROL?.angle)) {
     ctx.rotate(
       -RIGHT_CONTROL?.angle || -LEFT_CONTROL?.angle || this.rotation || 0
     );
+}
     ctx.translate(-this.fixedCenter.x, -this.fixedCenter.y);
     ctx.fillStyle = "white";
     ctx.fillRect(this.fixedX, this.fixedY, this.width, this.height);
@@ -799,7 +808,7 @@ ctx.save();
 
     // Start running animation if left joystick is active:
 
-    if (!this.running && LEFT_CONTROL?.distance > 0) {
+    if (GLOBAL_SETTINGS?.speed && LEFT_CONTROL && !this.running && LEFT_CONTROL?.distance > 0) {
       let time = 200 - GLOBAL_SETTINGS.speed * 100 + 100;
 
       this.running = setInterval(() => {
@@ -815,7 +824,7 @@ ctx.save();
         }, time / 3);
       }, time);
     } else if (this.running && !LEFT_CONTROL?.distance) {
-      clearInterval(this.running as number);
+      clearInterval(this.running as timeout);
       this.running = false;
     }
 
@@ -915,7 +924,9 @@ function render(): void {
   }
 
 // Render characters...
-  for (player in PLAYERS) player.render();
+  if (Object.keys(PLAYERS).length) {
+  for (let player in PLAYERS) PLAYERS[player].render();
+  }
 
 // Render objects...
    if (GLOBAL_ELEMENTS.length) {
@@ -928,7 +939,8 @@ function render(): void {
 // Render controls...
   if (LEFT_CONTROL?.active) {
     LEFT_CONTROL.render();
-    let { mapAnchor, speed, percent } = GLOBAL_SETTINGS;
+    let { mapAnchor, speed, percent } = GLOBAL_SETTINGS!;
+ if (speed) {
     speed *= 5;
 
     switch (LEFT_CONTROL.quad) {
@@ -949,6 +961,7 @@ function render(): void {
         mapAnchor.y += speed;
         break;
     }
+ }
   }
 
   if (RIGHT_CONTROL?.active) {
