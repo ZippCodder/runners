@@ -583,7 +583,7 @@ render(): void {
     ctx.restore();
     ctx.save();
     ctx.textAlign = "center";
-    ctx.font = "15px Arial";
+    ctx.font = `${GLOBAL_SETTINGS.percent(5,true)}px Arial`;
     ctx.fillStyle = "black";
     ctx.fillText(this.username,x + this.width/2,y - GLOBAL_SETTINGS.percent(8,true));
     setDefaults();
@@ -832,7 +832,7 @@ ctx.save();
     ctx.restore();
     ctx.save();
     ctx.textAlign = "center";
-    ctx.font = "15px Arial";
+    ctx.font = `${GLOBAL_SETTINGS.percent(5,true)}px Arial`;
     ctx.fillStyle = "black";
     ctx.fillText(this.username,this.fixedCenter.x,this.fixedCenter.y - GLOBAL_SETTINGS.percent(8,true) - this.height/2);
     setDefaults();
