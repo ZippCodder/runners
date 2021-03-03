@@ -4,6 +4,10 @@ const path = require("path");
 
 const server = http.createServer();
 
+module.exports.server = server
+
+let BROADCAST = require("./server.js");
+
 server.on("request",(req,res) => {
 if (req.url == "/") {
 fs.readFile("./src/index.html",(err,data) => {

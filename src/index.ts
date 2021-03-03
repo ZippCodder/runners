@@ -7,6 +7,12 @@ import "./styles.css";
 
 // Initial Canvas And Global Setup...
 
+// SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
+
+export let username = prompt("What is your username?")!;
+
+// SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
+
 const canvas = document.querySelector("canvas")!;
 canvas.onclick = () => {
   document.body.requestFullscreen();
@@ -45,7 +51,7 @@ ctx.save();
 
 type joystick = undefined | number;
 
-const GLOBAL_SETTINGS: {
+export const GLOBAL_SETTINGS: {
   readonly charWidth: number;
   readonly charHeight: number;
   readonly controlSize: number;
@@ -315,7 +321,7 @@ const GLOBAL_ELEMENTS: Array<any> = [];
 // Put other player objects here for management and rendering...
 // Oragnized by <username>:<OtherCharacter instance>
 
-const PLAYERS: {[index: string]: {render: Function}} = {};
+export const PLAYERS: {[index: string]: {render: Function,recalculate: Function}} = {};
 
 // Defining positional types...
 
@@ -326,6 +332,7 @@ type timeout = ReturnType<typeof setTimeout>;
 // Interface for creating character instances...
 
 interface Characters {
+[index: string]: any;
 width: number;
 height: number;
 eyePos: eyePosType;
@@ -351,8 +358,8 @@ readonly render: () => void;
 
 // Class for other players...
 
-class OtherCharacter implements Characters {
-  constructor (x: number, y: number,rotation: number,username: string) {
+export class OtherCharacter implements Characters {
+  constructor (x: number, y: number,username: string,rotation?: number) {
     this.posX = x;
     this.posY = y;
     this.x = GLOBAL_SETTINGS.percent(x,true) - this.width/2;
@@ -364,7 +371,8 @@ class OtherCharacter implements Characters {
 this.rotation = rotation || 0;
 this.username = username;
   }
- 
+
+  [index: string]: any; 
   x: number;
   y: number;
   posX: number;
@@ -609,6 +617,7 @@ class MainCharacter implements Characters {
     };
   }
  
+  [index: string]: any;
   x: number;
   y: number;
   fixedX: number;
@@ -843,7 +852,7 @@ ctx.save();
 
 // Defining main character instance...
 
-const MAIN_CHARACTER = new MainCharacter("ZippCodder Lv.0.1");
+export const MAIN_CHARACTER = new MainCharacter(username);
 
 // Auto Resizing Control...
 
@@ -905,6 +914,10 @@ function resize(init?: boolean): void {
     for (let i of GLOBAL_ELEMENTS) i?.recalculate();
   }
 
+ if (Object.keys(PLAYERS).length) {
+  for (let player in PLAYERS) PLAYERS[player].recalculate();
+  }
+
   MAIN_CHARACTER.recalculate();
 }
 
@@ -913,6 +926,16 @@ resize(true);
 const start: Function = (): void => {
   requestAnimationFrame(render);
 };
+
+// IMPORT SERVER COMMUNICATION FUNCTIONS__________________________
+
+import {
+new_user,
+update
+} from "./client.ts";
+
+new_user();
+
 
 function render(): void {
 // Clear canvas...
@@ -968,6 +991,8 @@ function render(): void {
     RIGHT_CONTROL.render();
   }
 
+// update();
+
 // Call next frame...
   requestAnimationFrame(render);
 }
@@ -975,4 +1000,5 @@ function render(): void {
 // Start running the frames...
 
 start();
+
 
