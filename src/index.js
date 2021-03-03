@@ -1,6 +1,9 @@
 // Aditional info
 /* Speed clases: 0.1 (lowest speed) - 2 (top speed) 20 speed clases total */
 // Initial Canvas And Global Setup...
+
+import "./styles.css";
+
 var canvas = document.querySelector("canvas");
 canvas.onclick = function () {
     document.body.requestFullscreen();

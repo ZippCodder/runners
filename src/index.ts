@@ -1,3 +1,6 @@
+
+import "./styles.css";
+
 // Aditional info
 
 /* Speed clases: 0.1 (lowest speed) - 2 (top speed) 20 speed clases total */
@@ -245,8 +248,8 @@ window.addEventListener("touchend", (e) => {
 
 window.addEventListener("touchmove", (e) => {
   function calc(CONTROLS: Control): void {
-    if (CONTROLS.touch && e.touches[CONTROLS.touch]!) {
-      let { pageX, pageY } = e.touches[CONTROLS.touch]!;
+    if (e.touches[<number>CONTROLS.touch]!) {
+      let { pageX, pageY } = e.touches[<number>CONTROLS.touch]!;
       let quad;
 
       let distance = Math.round(
@@ -289,8 +292,7 @@ window.addEventListener("touchmove", (e) => {
       }
 
       CONTROLS.quad = quad;
-
-      if (GLOBAL_SETTINGS.joystickSize && distance < GLOBAL_SETTINGS.joystickSize) {
+      if (distance < <number>GLOBAL_SETTINGS.joystickSize) {
         CONTROLS.mouseX = pageX;
         CONTROLS.mouseY = pageY;
         CONTROLS.angle = (angle * Math.PI) / 180;
@@ -793,11 +795,9 @@ ctx.save();
     ctx.restore();
     ctx.save();
     ctx.translate(this.fixedCenter.x, this.fixedCenter.y);
-if (RIGHT_CONTROL && LEFT_CONTROL && (RIGHT_CONTROL?.angle || LEFT_CONTROL?.angle)) {
     ctx.rotate(
-      -RIGHT_CONTROL?.angle || -LEFT_CONTROL?.angle || this.rotation || 0
+      -RIGHT_CONTROL?.angle! || -LEFT_CONTROL?.angle! || this.rotation || 0
     );
-}
     ctx.translate(-this.fixedCenter.x, -this.fixedCenter.y);
     ctx.fillStyle = "white";
     ctx.fillRect(this.fixedX, this.fixedY, this.width, this.height);
