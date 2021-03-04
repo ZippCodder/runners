@@ -917,7 +917,7 @@ function resize(init?: boolean): void {
 
  if (Object.keys(PLAYERS).length) {
   for (let player in PLAYERS) PLAYERS[player].recalculate();
-  }
+  } 
 
   MAIN_CHARACTER.recalculate();
 }
@@ -1002,5 +1002,3 @@ update();
 // Start running the frames...
 
 start();
-
-

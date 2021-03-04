@@ -15,11 +15,9 @@ let __interface__: OtherCharacter;
 
 // CREATE OTHER <OtherCharacter> INSTANCES FOR PLAYERS ALREADY IN ROOM_______________________________
 
-socket.on("prev_players",(Players: string) => {
-let plyrs = JSON.parse(Players);
-for (let plyr in plyrs) {
-let obj = plyrs[plyr];
-if (obj.username !== MAIN_CHARACTER.username) {
+socket.on("prev_players",(Players: {[index: string]: any}) => {
+for (let plyr in Players) {
+let obj = Players[plyr];
 let newPlayer = new OtherCharacter(0,0,obj.username,0);
 for (let prop in obj) {
 if (prop in newPlayer) {
@@ -28,18 +26,19 @@ newPlayer[prop] = obj[prop];
 }
  newPlayer.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
  newPlayer.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true); 
- newPlayer.x = GLOBAL_SETTINGS.percent(newPlayer.posX,true) - newPlayer.width/2;
- newPlayer.y = GLOBAL_SETTINGS.percent(newPlayer.posY,true) - newPlayer.height/2; 
+ newPlayer.eyeDim = GLOBAL_SETTINGS.percent(3,true);
+ newPlayer.handWidth = GLOBAL_SETTINGS.percent(4,true);
+ newPlayer.handHeight = GLOBAL_SETTINGS.percent(4,true);
+ newPlayer.x = GLOBAL_SETTINGS.percent(obj.posX,true) - newPlayer.width/2;
+ newPlayer.y = GLOBAL_SETTINGS.percent(obj.posY,true) - newPlayer.height/2; 
 
  PLAYERS[obj.username] = newPlayer;
-}
 }
 });
 
 // CREATE <OtherCharacter> INSTANCE FOR NEW PLAYERS________________________________________
 
-socket.on("new_player",(p: string) => {
-let obj = JSON.parse(p);
+socket.on("new_player",(obj: OtherCharacter) => {
 let newPlayer = new OtherCharacter(0,0,obj.username,0);
 for (let prop in obj) {
 if (prop in newPlayer) {
@@ -59,8 +58,7 @@ newPlayer[prop] = obj[prop];
 
 // UPDATE OTHER PLAYERS_________________________________
 
-socket.on("new_player_update",(p: string) => {
-let player = JSON.parse(p);
+socket.on("new_player_update",(player: OtherCharacter) => {
 if (player.username in PLAYERS) {
 let plyr =  PLAYERS[player.username];
 let {rotation, running, speed, x, y, posX, posY, fixedCenter, username} = player;
@@ -98,7 +96,7 @@ __interface__.posX = -Math.round((GLOBAL_SETTINGS.mapAnchor.x - GLOBAL_SETTINGS.
 __interface__.posY =  -Math.round((GLOBAL_SETTINGS.mapAnchor.y - GLOBAL_SETTINGS.globalCenter.y)/GLOBAL_SETTINGS.percent(1,true));
 __interface__.username = username;
 
-socket.emit("new_update",JSON.stringify(__interface__));
+socket.emit("new_update",__interface__);
 }
 
 // ENTER THIS PLAYER INTO SERVER___________________________________
@@ -130,5 +128,5 @@ for (let prop in __interface__) {
  __interface__.x = 0;
 __interface__.y = 0; 
 
-socket.emit("new_user",JSON.stringify(__interface__));
+socket.emit("new_user",__interface__);
 }
