@@ -57,7 +57,7 @@ export const GLOBAL_SETTINGS: {
   readonly controlSize: number;
   joystickSize: joystick;
   readonly scale: number;
-  readonly speedFactor: number;
+  speedFactor: number;
   speed: undefined | number;
   width: number;
   height: number;
@@ -191,7 +191,7 @@ if (GLOBAL_SETTINGS.joystickSize) {
 
 // Left and right joystick...
 
-let LEFT_CONTROL: Control | undefined, RIGHT_CONTROL: Control | undefined;
+export let LEFT_CONTROL: Control | undefined, RIGHT_CONTROL: Control | undefined;
 
 // Anchor and render joysticks...
 
@@ -411,7 +411,8 @@ run(boo: boolean) {
         }, time / 3);
       }, time);
 
-} else {
+} else if (!boo && this.running !== false) {
+clearInterval(this.running as timeout);
 this.running = false;
 }
 }
@@ -921,8 +922,6 @@ function resize(init?: boolean): void {
   MAIN_CHARACTER.recalculate();
 }
 
-resize(true);
-
 const start: Function = (): void => {
   requestAnimationFrame(render);
 };
@@ -936,6 +935,9 @@ update
 
 new_user();
 
+// Initilize dimension sizing___________________________
+
+resize(true);
 
 function render(): void {
 // Clear canvas...
@@ -991,7 +993,7 @@ function render(): void {
     RIGHT_CONTROL.render();
   }
 
-// update();
+update();
 
 // Call next frame...
   requestAnimationFrame(render);

@@ -10,6 +10,7 @@ socket.on("new_user",(player) => {
 console.log("\x1b[23m%s\x1b[0m","Created new player: " + player);
 PLAYERS[JSON.parse(player).username] = JSON.parse(player);
 console.log(PLAYERS);
+socket.emit("prev_players",JSON.stringify(PLAYERS));
 socket.broadcast.emit("new_player",player);
 });
 
