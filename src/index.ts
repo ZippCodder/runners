@@ -207,10 +207,7 @@ window.addEventListener("touchstart", (e) => {
   JOYSTICK.active = true;
 
   if (
-    pageX > window.innerWidth / 2 &&
-    e.touches.length !== 3 &&
-    pageY > window.innerHeight / 2
-  ) {
+    pageX > window.innerWidth / 2 && e.touches.length !== 3 && pageY > window.innerHeight / 2) {
     if (RIGHT_CONTROL?.touch == undefined) {
       RIGHT_CONTROL = JOYSTICK;
     }
@@ -321,7 +318,7 @@ const GLOBAL_ELEMENTS: Array<any> = [];
 // Put other player objects here for management and rendering...
 // Oragnized by <username>:<OtherCharacter instance>
 
-export const PLAYERS: {[index: string]: {render: Function,recalculate: Function}} = {};
+export const PLAYERS: {[index: string]: Characters} = {};
 
 // Defining positional types...
 
@@ -349,6 +346,7 @@ handWidth: number;
 handHeight: number;
 fixedCenter: {x: number, y: number};
 handPos: handPosType;
+readonly run?: (boo: boolean) => void;
 readonly blink: timeout;
 readonly recalculate: () => void;
 readonly drawHands: () => void;
@@ -362,8 +360,8 @@ export class OtherCharacter implements Characters {
   constructor (x: number, y: number,username: string,rotation?: number) {
     this.posX = x;
     this.posY = y;
-    this.x = GLOBAL_SETTINGS.percent(x,true) - this.width/2;
-    this.y = GLOBAL_SETTINGS.percent(y,true) - this.height/2;
+    this.x = GLOBAL_SETTINGS.percent(x,true) - this.width;
+    this.y = GLOBAL_SETTINGS.percent(y,true) - this.height;
     this.fixedCenter = {
       x: this.x + this.width / 2,
       y: this.y + this.height / 2
@@ -396,9 +394,31 @@ this.username = username;
     }, 1000);
   }, 6000);
 
+run(boo: boolean) {
+ if (boo && this.running == false) {
+ let time = 200 - this.speed * 100 + 100;
+
+      this.running = setInterval(() => {
+        this.handPos = "middle";
+        setTimeout(() => {
+          this.handPos = "top";
+          setTimeout(() => {
+            this.handPos = "bottom";
+            setTimeout(() => {
+              this.handPos = "middle";
+            }, time / 3);
+          }, time / 3);
+        }, time / 3);
+      }, time);
+
+} else {
+this.running = false;
+}
+}
+
 recalculate(x?: number, y?: number): void {
     this.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
-    this.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true); 
+    this.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true) 
      this.x = GLOBAL_SETTINGS.percent(this.posX,true) - this.width/2;
     this.y = GLOBAL_SETTINGS.percent(this.posY,true) - this.height/2; 
        this.handWidth = GLOBAL_SETTINGS.percent(4, true);
@@ -567,26 +587,6 @@ render(): void {
     setDefaults();
     this.drawEyes();
     setDefaults();
-
-    // Start running animation if left joystick is active:
-
-    if (this.running) {
-      let time = 200 - this.speed * 100 + 100;
-
-      this.running = setInterval(() => {
-        this.handPos = "middle";
-        setTimeout(() => {
-          this.handPos = "top";
-          setTimeout(() => {
-            this.handPos = "bottom";
-            setTimeout(() => {
-              this.handPos = "middle";
-            }, time / 3);
-          }, time / 3);
-        }, time / 3);
-      }, time);
-    } 
-
     this.drawHands();
     ctx.restore();
     ctx.save();
@@ -871,7 +871,7 @@ function resize(init?: boolean): void {
     height: GLOBAL_SETTINGS.height
   };
 
-  if (!init) {
+  if (!init){
     GLOBAL_SETTINGS.mapAnchor.x =
       window.innerWidth / 2 +
       GLOBAL_SETTINGS.percent(

@@ -14,8 +14,9 @@ socket.broadcast.emit("new_player",player);
 });
 
 socket.on("new_update",(player) => {
+
+ 
  socket.broadcast.emit("new_player_update",player);
- PLAYERS[JSON.parse(player).username] = JSON.parse(player);
 });
 
 // socket.on("disconnect",() => {
