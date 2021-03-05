@@ -5,6 +5,7 @@ const PLAYERS = {};
 const TIMERS = {};
 
 io.on("connection",(socket) => {
+
 socket.on("new_user",(player) => {
 console.log("A new player (" + player.username + ") has connected!");
 socket.emit("prev_players",PLAYERS);
@@ -52,4 +53,5 @@ __self__.posY = player.posY;
 });
 
 console.log("\x1b[32m%s\x1b[0m","Running in " + process.env.NODE_ENV + " mode...");
+
 module.exports = {};

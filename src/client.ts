@@ -1,5 +1,5 @@
 // @ts-ignore
-const socket = io()!;
+const socket = io({autoConnect: false})!;
 
 import {
 MAIN_CHARACTER,
@@ -83,21 +83,26 @@ plyr.posY = posY;
 // UPDATE THIS PLAYER___________________________________
 
 export function update() {
+if (socket.connected) {
 let {rotation, running, speed, x, y, posX, posY, fixedCenter, username} = MAIN_CHARACTER;
 __interface__.rotation = -RIGHT_CONTROL?.angle! || -LEFT_CONTROL?.angle! || rotation || 0;
 __interface__.running = running;
-__interface__.speed = speed;
+__interface__.speed = GLOBAL_SETTINGS.speedFactor;
 __interface__.posX = -Math.round((GLOBAL_SETTINGS.mapAnchor.x - GLOBAL_SETTINGS.globalCenter.x)/GLOBAL_SETTINGS.percent(1,true));
 __interface__.posY =  -Math.round((GLOBAL_SETTINGS.mapAnchor.y - GLOBAL_SETTINGS.globalCenter.y)/GLOBAL_SETTINGS.percent(1,true));
 __interface__.username = username;
 
 socket.emit("new_update",__interface__);
 }
+}
 
 // ENTER THIS PLAYER INTO SERVER___________________________________
 
 export function new_user() {
 if (MAIN_CHARACTER.username) {
+
+socket.connect();
+
 let spd = /<\d\.?\d?>/.exec(MAIN_CHARACTER.username)!, s;
 
 if (spd) {
@@ -120,6 +125,7 @@ for (let prop in __interface__) {
 } 
 
 // Set corrdinates of where character will start at on map...
+__interface__.speed = GLOBAL_SETTINGS.speedFactor;
  __interface__.x = 0;
 __interface__.y = 0; 
 
