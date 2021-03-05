@@ -406,9 +406,9 @@ run(boo: boolean) {
             this.handPos = "bottom";
             setTimeout(() => {
               this.handPos = "middle";
-            }, time / 3);
-          }, time / 3);
-        }, time / 3);
+            }, time / 2);
+          }, time / 2);
+        }, time / 2);
       }, time);
 
 } else if (!boo && this.running !== false) {

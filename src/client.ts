@@ -15,7 +15,7 @@ let __interface__: OtherCharacter;
 
 // CREATE OTHER <OtherCharacter> INSTANCES FOR PLAYERS ALREADY IN ROOM_______________________________
 
-socket.on("prev_players",(Players: {[index: string]: any}) => {
+socket.on("prev_players",(Players: {[index: string]: OtherCharacter}) => {
 for (let plyr in Players) {
 let obj = Players[plyr];
 let newPlayer = new OtherCharacter(0,0,obj.username,0);
@@ -73,13 +73,10 @@ plyr.run(true);
 plyr.rotation = rotation;
 plyr.speed = speed;
 plyr.username = username;
-// plyr.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
-// plyr.height = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charHeight, true); 
 plyr.x = (GLOBAL_SETTINGS.percent(posX - 1,true) - GLOBAL_SETTINGS.charWidth/2) - plyr.handWidth;
 plyr.y = (GLOBAL_SETTINGS.percent(posY - 1,true) - GLOBAL_SETTINGS.charHeight/2) - plyr.handHeight; 
-// plyr.fixedCenter = {x: plyr.x + GLOBAL_SETTINGS.charWidth/2, y: plyr.y + GLOBAL_SETTINGS.charHeight/2 };
-// plyr.posX = posX;
-// plyr.posY = posY;
+plyr.posX = posX;
+plyr.posY = posY;
 }
 });
 
@@ -90,8 +87,6 @@ let {rotation, running, speed, x, y, posX, posY, fixedCenter, username} = MAIN_C
 __interface__.rotation = -RIGHT_CONTROL?.angle! || -LEFT_CONTROL?.angle! || rotation || 0;
 __interface__.running = running;
 __interface__.speed = speed;
-// __interface__.x = x; 
-// __interface__.y = y;
 __interface__.posX = -Math.round((GLOBAL_SETTINGS.mapAnchor.x - GLOBAL_SETTINGS.globalCenter.x)/GLOBAL_SETTINGS.percent(1,true));
 __interface__.posY =  -Math.round((GLOBAL_SETTINGS.mapAnchor.y - GLOBAL_SETTINGS.globalCenter.y)/GLOBAL_SETTINGS.percent(1,true));
 __interface__.username = username;
@@ -102,7 +97,7 @@ socket.emit("new_update",__interface__);
 // ENTER THIS PLAYER INTO SERVER___________________________________
 
 export function new_user() {
-
+if (MAIN_CHARACTER.username) {
 let spd = /<\d\.?\d?>/.exec(MAIN_CHARACTER.username)!, s;
 
 if (spd) {
@@ -130,3 +125,17 @@ __interface__.y = 0;
 
 socket.emit("new_user",__interface__);
 }
+}
+
+// ERASE A PLAYER WHEN THEY DISCONNECT____________________
+
+socket.on("remove_player",(player: string) => {
+ delete PLAYERS[player];
+})
+
+// DISCONNECT USER FROM ROOM BEFORE PAGE IS CLOSED________________
+
+window.addEventListener("beforeunload",() => {
+ socket.emit("user_disconnect",MAIN_CHARACTER.username);
+ socket.close();
+});
