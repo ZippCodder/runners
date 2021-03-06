@@ -3,7 +3,7 @@ import "./styles.css";
 
 // Aditional info
 
-/* Speed clases: 0.1 (lowest speed) - 2 (top speed) 20 speed clases total */
+/* Speed clases: 0.1 (lowest speed) - 5 (top speed)*/
 
 // Initial Canvas And Global Setup...
 
@@ -406,9 +406,9 @@ run(boo: boolean) {
             this.handPos = "bottom";
             setTimeout(() => {
               this.handPos = "middle";
-            }, time / 2);
-          }, time / 2);
-        }, time / 2);
+            }, time / 3);
+          }, time / 3);
+        }, time / 3);
       }, time);
 
 } else if (!boo && this.running !== false) {

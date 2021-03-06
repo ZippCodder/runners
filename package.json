@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "PORT=5000 NODE_ENV=production node index.js",
+    "serve:prod": "PORT=5000 NODE_ENV=production node index.js",
+    "serve:dev": "PORT=5000 NODE_ENV=development node index.js",
     "dev": "webpack serve --mode=development",
     "prod": "webpack --mode=production"
   },

@@ -107,15 +107,17 @@ let spd = /<\d\.?\d?>/.exec(MAIN_CHARACTER.username)!, s;
 
 if (spd) {
 s = spd[0]?.replace(/<|>/g,"");
-MAIN_CHARACTER.username = MAIN_CHARACTER.username.replace(spd[0],"");
+MAIN_CHARACTER.username = MAIN_CHARACTER.username.replace(spd[0],"") + " Lv." + Number(s) * 10;
+} else {
+MAIN_CHARACTER.username = MAIN_CHARACTER.username + " Lv." + GLOBAL_SETTINGS.speedFactor * 10;
 }
 
 if (s) {
-GLOBAL_SETTINGS.speedFactor = parseFloat(s);
+GLOBAL_SETTINGS.speedFactor = Number(s);
 }
 
 // Create an <OtherCharacter> instance to pass to other clients...
-
+ 
   __interface__ = new OtherCharacter(0,0,MAIN_CHARACTER.username);
 
 for (let prop in __interface__) {
