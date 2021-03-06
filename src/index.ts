@@ -70,7 +70,7 @@ export const GLOBAL_SETTINGS: {
  } = {
   charWidth: 15,
   charHeight: 15,
-  controlSize: 20,
+  controlSize: 25,
   joystickSize: undefined,
   scale: 3,
   maxWidth: 10000,
@@ -326,7 +326,7 @@ type eyePosType = "open" | "closed";
 type handPosType = "top" | "middle" | "bottom";
 type timeout = ReturnType<typeof setTimeout>;
 
-// Interface for creating character instances...
+// Class for creating character instances...
 
 interface Characters {
 [index: string]: any;
@@ -606,12 +606,11 @@ render(): void {
 // Class for main characters...
 
 class MainCharacter implements Characters {
-  constructor (username: string,x?: number, y?: number) {
+  constructor (x?: number, y?: number) {
     this.x = x || GLOBAL_SETTINGS.maxWidth - this.width / 2;
     this.y = y || GLOBAL_SETTINGS.maxHeight - this.height / 2;
     this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;
     this.fixedY = GLOBAL_SETTINGS.height / 2 - this.height / 2;
-    this.username = username;
     this.fixedCenter = {
       x: this.fixedX + this.width / 2,
       y: this.fixedY + this.height / 2
@@ -795,9 +794,6 @@ class MainCharacter implements Characters {
   }
 
   render(): void {
-setDefaults();
-ctx.restore();
-ctx.save();
     this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;
     this.fixedY = GLOBAL_SETTINGS.height / 2 - this.height / 2;
 
@@ -848,7 +844,7 @@ ctx.save();
     setDefaults();
     ctx.restore();
     ctx.save();
-  } 
+  }
 }
 
 // Defining main character instance...
@@ -940,10 +936,8 @@ new_user();
 resize(true);
 
 function render(): void {
-// Clear canvas...
   ctx.clearRect(0, 0, GLOBAL_SETTINGS.width, GLOBAL_SETTINGS.height);
 
-// Render background...
   if (BACKGROUND) {
     BACKGROUND.render();
   }
@@ -958,10 +952,8 @@ function render(): void {
     for (let OBJ of GLOBAL_ELEMENTS) OBJ.render()!;
   }
 
-// Render main character...
   MAIN_CHARACTER.render();
 
-// Render controls...
   if (LEFT_CONTROL?.active) {
     LEFT_CONTROL.render();
     let { mapAnchor, speed, percent } = GLOBAL_SETTINGS!;
