@@ -139,6 +139,10 @@ socket.on("remove_player",(player: string) => {
 if (PLAYERS[player]) {
  delete PLAYERS[player];
 }
-})
+});
+
+window.addEventListener("beforeunload",() => {
+ socket.disconnect();
+});
 
 
