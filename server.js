@@ -3,30 +3,20 @@ const io = require("socket.io")(server);
 
 const PLAYERS = {};
 const TIMERS = {};
+const IDS = {};
 
 io.on("connection",(socket) => {
 
-socket.on("new_user",(player) => {
-console.log("A new player (" + player.username + ") has connected!");
-socket.emit("prev_players",PLAYERS);
-PLAYERS[player.username] = player;
-if (process.env.NODE_ENV == "production") {
-TIMERS[player.username] = setTimeout(() => {
- delete PLAYERS[player.username];
- delete TIMERS[player.username];
- console.log("A player ("+ player.username +") has disconnected!");
- socket.broadcast.emit("remove_player",player.username);
-},10000); 
-}
-console.log(PLAYERS);
-socket.broadcast.emit("new_player",player);
+socket.on("disconnect",() => {
+ console.log("A player (" + IDS[socket.id] + ") has disconnected!");
+ socket.emit("remove_player",IDS[socket.id]);
 });
 
-socket.on("user_disconnect",(user) => {
-console.log("A player ("+ user +") has disconnected!");
- delete PLAYERS[user];
- delete TIMERS[user];
-socket.broadcast.emit("remove_player",user);
+socket.on("new_user",(player) => {
+ console.log("A new player (" + player.username + ") has connected!");
+PLAYERS[player.username] = player;
+IDS[socket.id] = player.username;
+socket.emit("players",PLAYERS);
 });
 
 socket.on("new_update",(player) => { 

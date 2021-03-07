@@ -606,7 +606,8 @@ render(): void {
 // Class for main characters...
 
 class MainCharacter implements Characters {
-  constructor (x?: number, y?: number) {
+  constructor (username: string, x?: number, y?: number) {
+    this.username = username;
     this.x = x || GLOBAL_SETTINGS.maxWidth - this.width / 2;
     this.y = y || GLOBAL_SETTINGS.maxHeight - this.height / 2;
     this.fixedX = GLOBAL_SETTINGS.width / 2 - this.width / 2;

@@ -7,17 +7,17 @@ PLAYERS,
 GLOBAL_SETTINGS,
 LEFT_CONTROL,
 RIGHT_CONTROL,
-OtherCharacter,
-username
+OtherCharacter
 } from "./index.ts";
 
 let __interface__: OtherCharacter;
 
 // CREATE OTHER <OtherCharacter> INSTANCES FOR PLAYERS ALREADY IN ROOM_______________________________
 
-socket.on("prev_players",(Players: {[index: string]: OtherCharacter}) => {
+ socket.on("players",(Players: {[index: string]: OtherCharacter}) => {
 for (let plyr in Players) {
 let obj = Players[plyr];
+if (obj.username != MAIN_CHARACTER.username) {
 let newPlayer = new OtherCharacter(0,0,obj.username,0);
 for (let prop in obj) {
 if (prop in newPlayer) {
@@ -34,15 +34,17 @@ newPlayer[prop] = obj[prop];
 
  PLAYERS[obj.username] = newPlayer;
 }
-});
+}
+}); 
 
-// CREATE <OtherCharacter> INSTANCE FOR NEW PLAYERS________________________________________
+// UPDATE OTHER PLAYERS_________________________________
 
-socket.on("new_player",(obj: OtherCharacter) => {
-let newPlayer = new OtherCharacter(0,0,obj.username,0);
-for (let prop in obj) {
+socket.on("new_player_update",(player: OtherCharacter) => {
+if (!(player.username in PLAYERS)) {
+let newPlayer = new OtherCharacter(0,0,player.username,0);
+for (let prop in player) {
 if (prop in newPlayer) {
-newPlayer[prop] = obj[prop];
+newPlayer[prop] = player[prop];
 }
 }
  newPlayer.width = GLOBAL_SETTINGS.percent(GLOBAL_SETTINGS.charWidth, true);
@@ -53,13 +55,10 @@ newPlayer[prop] = obj[prop];
  newPlayer.x = GLOBAL_SETTINGS.percent(newPlayer.posX,true) - newPlayer.width/2;
  newPlayer.y = GLOBAL_SETTINGS.percent(newPlayer.posY,true) - newPlayer.height/2; 
 
- PLAYERS[obj.username] = newPlayer;
-});
+ PLAYERS[player.username] = newPlayer;
 
-// UPDATE OTHER PLAYERS_________________________________
+}
 
-socket.on("new_player_update",(player: OtherCharacter) => {
-if (player.username in PLAYERS) {
 let plyr =  PLAYERS[player.username];
 let {rotation, running, speed, x, y, posX, posY, fixedCenter, username} = player;
 
@@ -77,7 +76,6 @@ plyr.x = (GLOBAL_SETTINGS.percent(posX - 1,true) - GLOBAL_SETTINGS.charWidth/2) 
 plyr.y = (GLOBAL_SETTINGS.percent(posY - 1,true) - GLOBAL_SETTINGS.charHeight/2) - plyr.handHeight; 
 plyr.posX = posX;
 plyr.posY = posY;
-}
 });
 
 // UPDATE THIS PLAYER___________________________________
@@ -138,12 +136,9 @@ socket.emit("new_user",__interface__);
 // ERASE A PLAYER WHEN THEY DISCONNECT____________________
 
 socket.on("remove_player",(player: string) => {
+if (PLAYERS[player]) {
  delete PLAYERS[player];
+}
 })
 
-// DISCONNECT USER FROM ROOM BEFORE PAGE IS CLOSED________________
 
-window.addEventListener("beforeunload",() => {
- socket.emit("user_disconnect",MAIN_CHARACTER.username);
- socket.close();
-});
