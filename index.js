@@ -6,9 +6,6 @@ require("dotenv").config();
 
 const server = http.createServer();
 
-module.exports.server = server
-require("./server.js");
-
 server.on("request",(req,res) => {
 if (req.url == "/") {
 fs.readFile("./src/index.html",(err,data) => {
@@ -41,6 +38,5 @@ res.end();
 }
 });
 
-server.listen(process.env.PORT,() => {
- console.log("\x1b[32m%s\x1b[0m","Application is listening on port " + process.env.PORT);
-})
+module.exports.server = server;
+require("./server.js");

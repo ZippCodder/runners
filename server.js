@@ -1,8 +1,9 @@
 const server = require("./index.js").server;
-const io = require("socket.io")(server);
-
+const io = require("socket.io")();
+io.attach(server);
 const PLAYERS = {};
 const IDS = {};
+const port = (process.env.NODE_ENV ?? 5000);
 
 io.on("connection",(socket) => {
 
@@ -33,10 +34,11 @@ __self__.posY = player.posY;
 }
 });
 
-socket.emit("players",PLAYERS);
-
-});
-
-console.log("\x1b[32m%s\x1b[0m","Running in " + process.env.NODE_ENV + " mode...");
+socket.emit("players",PLAYERS); 
+}); 
 
 module.exports = {};
+
+server.listen(5000,() => {
+console.log("\x1b[32m%s\x1b[0m","Server is running in " + (process.env.NODE_ENV ?? "development") + " mode on port " + port);
+});
