@@ -7,9 +7,9 @@ import "./styles.css";
 
 // Initial Canvas And Global Setup...
 
-// SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
+// SET PLAYERS USERNAME BEFORE ENTERING ROOM_________________
 
-export let username = prompt("What is your username?")!;
+export let username: string = "Laya<1>";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
 
@@ -18,7 +18,7 @@ canvas.onclick = () => {
   document.body.requestFullscreen();
 };
 
-const ctx = canvas.getContext("2d")!;
+export const ctx = canvas.getContext("2d")!;
 
 // Default canvas settings...
 
@@ -77,11 +77,11 @@ export const GLOBAL_SETTINGS: {
   maxHeight: 10000,
   speedFactor: 0.1,
   speed: undefined,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: self.innerWidth,
+  height: self.innerHeight,
   prevDim: undefined,
-  globalCenter: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-  mapAnchor: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+  globalCenter: { x: self.innerWidth / 2, y: window.innerHeight / 2 },
+  mapAnchor: { x: self.innerWidth / 2, y: window.innerHeight / 2 },
   percent: function (num: number, h?: boolean, o?: number): number {
     if (h) {
       return (
@@ -109,25 +109,20 @@ height;
 render;
 }
 
-// Default map...
+import { Spawn, Bench } from "./lib.ts";
 
-let BACKGROUND = new Mapp(5000, 5000, () => {
+// Default map...
+ 
+let DEFAULT_BACKGROUND = new Mapp(5000, 5000, () => {
   let { x, y } = GLOBAL_SETTINGS.mapAnchor;
   let { percent } = GLOBAL_SETTINGS;
   setDefaults();
   ctx.beginPath();
-  ctx.rect(
-    x - percent(60.5, true),
-    y - percent(50, true),
-    percent(125, true),
-    percent(100, true)
-  );
-  ctx.rect(
-    x - percent(25, true),
-    y - percent(25, true),
-    percent(50, true),
-    percent(50, true)
-  );
+Spawn(-60.5, -50);
+Bench(85.5,-25,"left");
+Bench(-105.5,-25,"right");
+Bench(-25,-95,"down");
+Bench(-25,75,"up");
   ctx.stroke();
 });
 
@@ -195,7 +190,7 @@ export let LEFT_CONTROL: Control | undefined, RIGHT_CONTROL: Control | undefined
 
 // Anchor and render joysticks...
 
-window.addEventListener("touchstart", (e) => {
+self.addEventListener("touchstart", (e) => {
   let { pageX, pageY } = e.touches![e.touches!.length - 1];
 
   let JOYSTICK = new CONTROL();
@@ -207,14 +202,14 @@ window.addEventListener("touchstart", (e) => {
   JOYSTICK.active = true;
 
   if (
-    pageX > window.innerWidth / 2 && e.touches.length !== 3 && pageY > window.innerHeight / 2) {
+    pageX > self.innerWidth / 2 && e.touches.length !== 3 && pageY > window.innerHeight / 2) {
     if (RIGHT_CONTROL?.touch == undefined) {
       RIGHT_CONTROL = JOYSTICK;
     }
   } else if (
-    pageX < window.innerWidth / 2 &&
+    pageX < self.innerWidth / 2 &&
     e.touches.length !== 3 &&
-    pageY > window.innerHeight / 2
+    pageY > self.innerHeight / 2
   ) {
     if (LEFT_CONTROL?.touch == undefined) {
       LEFT_CONTROL = JOYSTICK;
@@ -224,9 +219,9 @@ window.addEventListener("touchstart", (e) => {
 
 // Hide joysticks and stop character movements...
 
-window.addEventListener("touchend", (e) => {
+self.addEventListener("touchend", (e) => {
   if (LEFT_CONTROL && RIGHT_CONTROL && e.touches && e.touches.length == 1) {
-    if (e.touches[0].pageX > window.innerWidth / 2) {
+    if (e.touches[0].pageX > self.innerWidth / 2) {
       LEFT_CONTROL.distance = 0;
       MAIN_CHARACTER.rotation = -LEFT_CONTROL?.angle;
       LEFT_CONTROL = undefined;
@@ -249,7 +244,7 @@ window.addEventListener("touchend", (e) => {
 
 // Update joystick and character movements...
 
-window.addEventListener("touchmove", (e) => {
+self.addEventListener("touchmove", (e) => {
   function calc(CONTROLS: Control): void {
     if (e.touches[<number>CONTROLS.touch]!) {
       let { pageX, pageY } = e.touches[<number>CONTROLS.touch]!;
@@ -854,15 +849,15 @@ export const MAIN_CHARACTER = new MainCharacter(username);
 
 // Auto Resizing Control...
 
-window.addEventListener("resize", () => {
+self.addEventListener("resize", () => {
   resize();
 });
 
 function resize(init?: boolean): void {
-  canvas.style.width = window.innerWidth + "px";
-  canvas.style.height = window.innerHeight + "px";
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.style.width = self.innerWidth + "px";
+  canvas.style.height = self.innerHeight + "px";
+  canvas.width = self.innerWidth;
+  canvas.height = self.innerHeight;
 
   GLOBAL_SETTINGS.prevDim = {
     width: GLOBAL_SETTINGS.width,
@@ -871,36 +866,36 @@ function resize(init?: boolean): void {
 
   if (!init){
     GLOBAL_SETTINGS.mapAnchor.x =
-      window.innerWidth / 2 +
+      self.innerWidth / 2 +
       GLOBAL_SETTINGS.percent(
         ((GLOBAL_SETTINGS.mapAnchor.x - GLOBAL_SETTINGS.globalCenter.x) /
           GLOBAL_SETTINGS.width) *
           100,
         false,
-        window.innerWidth
+        self.innerWidth
       );
    
     GLOBAL_SETTINGS.mapAnchor.y =
-      window.innerHeight / 2 +
+      self.innerHeight / 2 +
       GLOBAL_SETTINGS.percent(
         ((GLOBAL_SETTINGS.mapAnchor.y - GLOBAL_SETTINGS.globalCenter.y) /
           GLOBAL_SETTINGS.height) *
           100,
         false,
-        window.innerHeight
+        self.innerHeight
       );
      }
 
-  GLOBAL_SETTINGS.width = window.innerWidth;
-  GLOBAL_SETTINGS.height = window.innerHeight;
+  GLOBAL_SETTINGS.width = self.innerWidth;
+  GLOBAL_SETTINGS.height = self.innerHeight;
   GLOBAL_SETTINGS.joystickSize = GLOBAL_SETTINGS.percent(
     GLOBAL_SETTINGS.controlSize,
     true
   );
 
   GLOBAL_SETTINGS.globalCenter = {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2
+    x: self.innerWidth / 2,
+    y: self.innerHeight / 2
   };
 
   GLOBAL_SETTINGS.speed = GLOBAL_SETTINGS.percent(
@@ -939,8 +934,8 @@ resize(true);
 function render(): void {
   ctx.clearRect(0, 0, GLOBAL_SETTINGS.width, GLOBAL_SETTINGS.height);
 
-  if (BACKGROUND) {
-    BACKGROUND.render();
+  if (DEFAULT_BACKGROUND) {
+    DEFAULT_BACKGROUND.render();
   }
 
 // Render characters...

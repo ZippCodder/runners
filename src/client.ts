@@ -141,7 +141,7 @@ if (PLAYERS[player]) {
 }
 });
 
-window.addEventListener("beforeunload",() => {
+self.addEventListener("beforeunload",() => {
  socket.disconnect();
 });
 
