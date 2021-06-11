@@ -1,6 +1,13 @@
 import { ctx, GLOBAL_SETTINGS } from "./index.ts";
 
-/* REUSABLE OBJECTS */
+
+/* OBJECT DIKMENSIONS (for measurement) ____________________________
+Spawn: 121*100
+Bench: 25*50 (can change orientation)
+Road: (Regular peice: 130*70, connectors: 70*70)
+*/
+
+/* REUSABLE OBJECTS ____________________________________*/
 
 /* Spawn box (usually at center of map) __________*/
 
@@ -14,6 +21,12 @@ ctx.rect(
     percent(121, true),
     percent(100, true)
   );
+ctx.rect(
+   x + percent(cx+5, true),
+   y + percent(cy+5, true),
+   percent(111, true),
+   percent(90, true)
+);
 // inner peice
   ctx.rect(
     x + percent(cx+35.5, true),
@@ -95,7 +108,6 @@ ctx.rect(
   ctx.moveTo(x + percent(cx+18, true), y + percent(cy, true));
   ctx.lineTo(x + percent(cx+18, true), y + percent(cy+50, true));
 } else if (dir == "up") {
-// (-25,-95)
   // main peice
 ctx.rect(
     x + percent(cx, true),
@@ -129,7 +141,6 @@ ctx.rect(
   ctx.lineTo(x + percent(cx+50, true), y + percent(cy+2, true));
 
 } else if (dir == "down") {
-// (-25,-95)
   // main peice
 ctx.rect(
     x + percent(cx, true),
@@ -163,3 +174,328 @@ ctx.rect(
   ctx.lineTo(x + percent(cx+50, true), y + percent(cy+18, true));
 }
 } 
+
+/* Road segment prop _________________*/
+
+type peice = "horizontal" | "vertical" | "L_corner" | "R_corner" | "U_corner" | "D_corner" | "L_conn" | "R_conn" | "U_conn" | "D_conn";
+
+export function Road(cx: number,cy: number,peice: peice): void {
+let { percent } = GLOBAL_SETTINGS;
+let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+if (peice == "horizontal") {
+// top curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(130, true),
+  percent(10, true)
+);
+// bottom curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+60, true),
+  percent(130, true),
+  percent(10, true)
+);
+// first stripe
+ctx.rect(
+  x + percent(cx+26, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+// second stripe
+ctx.rect(
+  x + percent(cx+78, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+} else if (peice == "vertical") {
+// left curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(130, true)
+);
+// right curb
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(130, true)
+);
+// first stripe
+ctx.rect(
+  x + percent(cx+33.5, true),
+  y + percent(cy+26, true),
+  percent(3, true),
+  percent(26, true)
+);
+// second stripe
+ctx.rect(
+  x + percent(cx+33.5, true),
+  y + percent(cy+78, true),
+  percent(3, true),
+  percent(26, true)
+);
+} else if (peice == "L_corner") {
+// first curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(60, true),
+  percent(10, true)
+);
+// second curb
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(70, true)
+);
+// square
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+60, true),
+  percent(10, true),
+  percent(10, true)
+);
+// stripe
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+} else if (peice == "R_corner") {
+// first curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(70, true)
+);
+// second curb
+ctx.rect(
+  x + percent(cx+10, true),
+  y + percent(cy, true),
+  percent(60, true),
+  percent(10, true)
+);
+// square
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy+60, true),
+  percent(10, true),
+  percent(10, true)
+);
+// stripe
+ctx.rect(
+  x + percent(cx+44, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+} else if (peice == "U_corner") {
+// first curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(70, true)
+);
+// second curb
+ctx.rect(
+  x + percent(cx+10, true),
+  y + percent(cy+60, true),
+  percent(60, true),
+  percent(10, true)
+);
+// square
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(10, true)
+);
+// stripe
+ctx.rect(
+  x + percent(cx+44, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+} else if (peice == "D_corner") {
+// first curb
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(70, true)
+);
+// second curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+60, true),
+  percent(60, true),
+  percent(10, true)
+);
+// square
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(10, true)
+);
+// stripe
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+
+} else if (peice == "L_conn") {
+// left curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(40, true)
+);
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+90, true),
+  percent(10, true),
+  percent(40, true)
+);
+// right curb
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(130, true)
+);
+// first stripe
+ctx.rect(
+  x + percent(cx+33.5, true),
+  y + percent(cy+26, true),
+  percent(3, true),
+  percent(26, true)
+);
+// second stripe
+ctx.rect(
+  x + percent(cx+33.5, true),
+  y + percent(cy+78, true),
+  percent(3, true),
+  percent(26, true)
+);
+} else if (peice == "R_conn") {
+// left curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(130, true)
+);
+// right curb
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy, true),
+  percent(10, true),
+  percent(40, true)
+);
+ctx.rect(
+  x + percent(cx+60, true),
+  y + percent(cy+90, true),
+  percent(10, true),
+  percent(40, true)
+);
+// first stripe
+ctx.rect(
+  x + percent(cx+33.5, true),
+  y + percent(cy+26, true),
+  percent(3, true),
+  percent(26, true)
+);
+// second stripe
+ctx.rect(
+  x + percent(cx+33.5, true),
+  y + percent(cy+78, true),
+  percent(3, true),
+  percent(26, true)
+);
+} else if (peice == "U_conn") {
+// top curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(40, true),
+  percent(10, true)
+);
+ctx.rect(
+ x + percent(cx+90, true),
+ y + percent(cy, true),
+ percent(40, true),
+ percent(10, true)
+);
+// bottom curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+60, true),
+  percent(130, true),
+  percent(10, true)
+);
+// first stripe
+ctx.rect(
+  x + percent(cx+26, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+// second stripe
+ctx.rect(
+  x + percent(cx+78, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+} else if (peice == "D_conn") {
+// top curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(130, true),
+  percent(10, true)
+);
+// bottom curb
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+60, true),
+  percent(40, true),
+  percent(10, true)
+);
+ctx.rect(
+  x + percent(cx+90, true),
+  y + percent(cy+60, true),
+  percent(40, true),
+  percent(10, true)
+);
+// first stripe
+ctx.rect(
+  x + percent(cx+26, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+// second stripe
+ctx.rect(
+  x + percent(cx+78, true),
+  y + percent(cy+33.5, true),
+  percent(26, true),
+  percent(3, true)
+);
+}
+}

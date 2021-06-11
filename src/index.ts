@@ -9,7 +9,7 @@ import "./styles.css";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM_________________
 
-export let username: string = "Laya<1>";
+export let username: string = "Laya<0.2>";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
 
@@ -109,7 +109,7 @@ height;
 render;
 }
 
-import { Spawn, Bench } from "./lib.ts";
+import { Spawn, Bench, Road } from "./lib.ts";
 
 // Default map...
  
