@@ -20,33 +20,6 @@ canvas.onclick = () => {
 
 export const ctx = canvas.getContext("2d")!;
 
-// Default canvas settings...
-
-function setDefaults(
-  lineWidth?: boolean,
-  strokeStyle?: boolean,
-  fillStyle?: boolean,
-  globalAlpha?: boolean,
-  rotation?: boolean
-): void {
-  if (!lineWidth) {
-    ctx.lineWidth = 2;
-  }
-  if (!strokeStyle) {
-    ctx.strokeStyle = "black";
-  }
-  if (!fillStyle) {
-    ctx.fillStyle = "white";
-  }
-  if (!globalAlpha) {
-    ctx.globalAlpha = 1;
-  }
-}
-
-setDefaults();
-
-ctx.save();
-
 // Common properties for accessability...
 
 type joystick = undefined | number;
@@ -70,7 +43,7 @@ export const GLOBAL_SETTINGS: {
  } = {
   charWidth: 15,
   charHeight: 15,
-  controlSize: 25,
+  controlSize: 20,
   joystickSize: undefined,
   scale: 3,
   maxWidth: 10000,
@@ -95,6 +68,50 @@ export const GLOBAL_SETTINGS: {
   }
 };
 
+// Default canvas settings...
+
+export const DEFAULTS = {
+lineWidth: (window.innerWidth <= 800) ? 2:3,
+strokeStyle: "black",
+fillStyle: "white",
+globalAlpha: 1,
+textAlign: "center",
+font: `${GLOBAL_SETTINGS.percent(5, true)} Arial`
+}
+
+export function setDefaults(
+  lineWidth?: boolean,
+  strokeStyle?: boolean,
+  fillStyle?: boolean,
+  globalAlpha?: boolean,
+  textAlign?: boolean,
+  font?: boolean
+): void {
+  if (!lineWidth) {
+    ctx.lineWidth =  DEFAULTS.lineWidth; 
+  }
+  if (!strokeStyle) {
+    ctx.strokeStyle = DEFAULTS.strokeStyle;
+  }
+  if (!fillStyle) {
+    ctx.fillStyle = DEFAULTS.fillStyle;
+  }
+  if (!globalAlpha) {
+    ctx.globalAlpha = DEFAULTS.globalAlpha;
+  }
+  if (!textAlign) {
+    //@ts-ignore
+    ctx.textAlign = DEFAULTS.textAlign; 
+  }
+  if (!font) {
+    ctx.font = DEFAULTS.font;
+  }
+}
+
+setDefaults();
+
+ctx.save();
+
 // Class for making maps...
 
 class Mapp {
@@ -109,7 +126,7 @@ height;
 render;
 }
 
-import { Spawn, Bench, Road } from "./lib.ts";
+import { Spawn, Bench, Road, Booth, Flower } from "./lib.ts";
 
 // Default map...
  
@@ -123,7 +140,52 @@ Bench(85.5,-25,"left");
 Bench(-105.5,-25,"right");
 Bench(-25,-95,"down");
 Bench(-25,75,"up");
-  ctx.stroke();
+Road(-65,-264.5,"U_conn");
+Road(-195,-264.5,"horizontal");
+Road(65,-264.5,"horizontal");
+Road(195,-264.5,"L_corner");
+Road(195,-194.5,"vertical");
+Road(195,-64.5,"R_conn");
+Road(195,65.5,"vertical");
+Road(195,195.5,"D_corner");
+Road(65,195.5,"horizontal");
+Road(-65,195.5,"D_conn");
+Road(-195,195.5,"horizontal");
+Road(-265,195.5,"U_corner");
+Road(-265,65.5,"vertical");
+Road(-265,-64.5,"L_conn");
+Road(-265,-194.5,"vertical");
+Road(-265,-264.5,"R_corner");
+Booth(70.5,-170,"LOTTERY");
+Booth(-105.5,-170,"RANKINGS");
+Booth(-17.5,-170,"PVP");
+// Center stripe
+ctx.rect(
+x + percent(-125.5, true),
+y + percent(-115, true),
+percent(251, true),
+percent(230, true)
+);
+ctx.stroke();
+// Center stripe
+Flower(52.5,-153);
+Flower(-32,-125);
+Flower(-128.5,-170);
+Flower(-158.5,-84);
+Flower(-138.5,2);
+Flower(-115.5,132);
+Flower(56,150);
+Flower(146,132);
+Flower(154,90);
+Flower(173,82);
+Flower(156,-7);
+Flower(166,-28);
+Flower(133,-89);
+Flower(127,-145);
+Flower(156,-167);
+Flower(0,161);
+Flower(-134.5,162);
+Flower(-146,23);
 });
 
 // Class for creating joysticks...
@@ -427,7 +489,7 @@ recalculate(x?: number, y?: number): void {
    let x = GLOBAL_SETTINGS.mapAnchor.x + this.x;
     let y = GLOBAL_SETTINGS.mapAnchor.y + this.y; 
 
-    ctx.lineWidth = 4;
+    ctx.lineWidth = DEFAULTS.lineWidth*2;
     if (this.handPos == "middle") {
       ctx.strokeRect(
         x - this.handWidth - 1,
@@ -655,7 +717,7 @@ class MainCharacter implements Characters {
   }
 
   drawHands(): void {
-    ctx.lineWidth = 4;
+    ctx.lineWidth = DEFAULTS.lineWidth*2;
     if (this.handPos == "middle") {
       ctx.strokeRect(
         this.fixedX - this.handWidth - 1,
@@ -851,6 +913,8 @@ export const MAIN_CHARACTER = new MainCharacter(username);
 
 self.addEventListener("resize", () => {
   resize();
+  DEFAULTS.lineWidth = (window.innerWidth <= 800) ? 2:3,
+  DEFAULTS.font = `${GLOBAL_SETTINGS.percent(5, true)} Arial`;
 });
 
 function resize(init?: boolean): void {

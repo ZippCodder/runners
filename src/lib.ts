@@ -1,10 +1,10 @@
-import { ctx, GLOBAL_SETTINGS } from "./index.ts";
-
+import { ctx, GLOBAL_SETTINGS, setDefaults, DEFAULTS } from "./index.ts";
 
 /* OBJECT DIKMENSIONS (for measurement) ____________________________
 Spawn: 121*100
 Bench: 25*50 (can change orientation)
 Road: (Regular peice: 130*70, connectors: 70*70)
+Booth: 35*60
 */
 
 /* REUSABLE OBJECTS ____________________________________*/
@@ -14,6 +14,7 @@ Road: (Regular peice: 130*70, connectors: 70*70)
 export function Spawn(cx: number, cy: number): void {
 let { percent } = GLOBAL_SETTINGS;
 let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ctx.beginPath();
 // outer peice
 ctx.rect(
     x + percent(cx, true),
@@ -34,6 +35,7 @@ ctx.rect(
     percent(50, true),
     percent(50, true)
   ); 
+ctx.stroke();
 }
 
 /* Common bench prop __________*/
@@ -43,6 +45,7 @@ type direction = "up" | "down" | "left" | "right";
 export function Bench(cx: number, cy: number,dir: direction): void {
 let { percent } = GLOBAL_SETTINGS;
 let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ctx.beginPath();
 if (dir == "left") {
 // main peice
 ctx.rect(
@@ -173,6 +176,7 @@ ctx.rect(
   ctx.moveTo(x + percent(cx, true), y + percent(cy+18, true));
   ctx.lineTo(x + percent(cx+50, true), y + percent(cy+18, true));
 }
+ctx.stroke();
 } 
 
 /* Road segment prop _________________*/
@@ -182,6 +186,7 @@ type peice = "horizontal" | "vertical" | "L_corner" | "R_corner" | "U_corner" | 
 export function Road(cx: number,cy: number,peice: peice): void {
 let { percent } = GLOBAL_SETTINGS;
 let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ctx.beginPath();
 if (peice == "horizontal") {
 // top curb
 ctx.rect(
@@ -498,4 +503,182 @@ ctx.rect(
   percent(3, true)
 );
 }
+ctx.stroke();
+}
+
+/* Booths _____________*/
+
+type label = "LOTTERY" | "RANKINGS" | "PVP";
+
+export function Booth(cx: number,cy: number,label: label): void {
+let { percent } = GLOBAL_SETTINGS;
+let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ctx.beginPath();
+ ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(35, true),
+  percent(40, true) 
+); 
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy-15, true),
+  percent(35, true),
+  percent(15, true)
+);
+ctx.rect(
+  x + percent(cx+5, true),
+  y + percent(cy+10, true),
+  percent(25, true),
+  percent(20, true)
+);
+ctx.rect(
+  x + percent(cx+2, true),
+  y + percent(cy+30, true),
+  percent(31, true),
+  percent(3, true)
+);
+ctx.fillStyle = "black";
+ctx.font = `${percent(5, true)}px Arial`;
+ctx.fillText(
+  label,
+  x + percent(cx+17.5, true),
+  y + percent(cy+7, true)
+);
+if (label == "LOTTERY") {
+// First stack
+ctx.rect(
+  x + percent(cx+9.5, true),
+  y + percent(cy+22, true),
+  percent(4, true),
+  percent(8, true)
+);
+ctx.rect(
+  x + percent(cx+9.5, true),
+  y + percent(cy+26, true),
+  percent(4, true),
+  percent(2, true)
+);
+ctx.rect(
+  x + percent(cx+9.5, true),
+  y + percent(cy+28, true),
+  percent(4, true),
+  percent(2, true)
+);
+// Second stack
+ctx.rect(
+  x + percent(cx+15.5, true),
+  y + percent(cy+18, true),
+  percent(4, true),
+  percent(12, true)
+);
+ctx.rect(
+  x + percent(cx+15.5, true),
+  y + percent(cy+22, true),
+  percent(4, true),
+  percent(2, true)
+);
+ctx.rect(
+  x + percent(cx+15.5, true),
+  y + percent(cy+26, true),
+  percent(4, true),
+  percent(2, true)
+);
+// Third stack
+ctx.rect(
+  x + percent(cx+21.5, true),
+  y + percent(cy+20, true),
+  percent(4, true),
+  percent(8, true)
+);
+ctx.rect(
+  x + percent(cx+21.5, true),
+  y + percent(cy+24, true),
+  percent(4, true),
+  percent(2, true)
+);
+ctx.rect(
+  x + percent(cx+21.5, true),
+  y + percent(cy+26, true),
+  percent(4, true),
+  percent(2, true)
+);
+ctx.rect(
+  x + percent(cx+21.5, true),
+  y + percent(cy+28, true),
+  percent(4, true),
+  percent(2, true)
+);
+} else if (label == "RANKINGS") {
+ctx.rect(
+  x + percent(cx+7, true),
+  y + percent(cy+13, true),
+  percent(21, true),
+  percent(3, true)
+);
+ctx.rect(
+  x + percent(cx+7, true),
+  y + percent(cy+18, true),
+  percent(21, true),
+  percent(3, true)
+);
+ctx.rect(
+  x + percent(cx+7, true),
+  y + percent(cy+23, true),
+  percent(21, true),
+  percent(3, true)
+);
+} else if (label == "PVP") {
+
+}
+ctx.stroke();
+}
+
+/* Flower prop______________*/
+
+export function Flower(cx: number,cy: number): void {
+  let { percent } = GLOBAL_SETTINGS;
+  let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ctx.beginPath();
+ctx.rect(
+  x + percent(cx-2, true),
+  y + percent(cy-2, true),
+  percent(4, true),
+  percent(4, true)
+);
+ctx.rect(
+  x + percent(cx+3, true),
+  y + percent(cy-2, true),
+  percent(4, true),
+  percent(4, true)
+);
+ctx.rect(
+  x + percent(cx-2, true),
+  y + percent(cy+3, true),
+  percent(4, true),
+  percent(4, true)
+);
+ctx.rect(
+  x + percent(cx+3, true),
+  y + percent(cy+3, true),
+  percent(4, true),
+  percent(4, true)
+);
+ctx.stroke();
+ctx.beginPath();
+ctx.fillStyle = "white";
+ctx.fillRect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(5, true),
+  percent(5, true)
+);
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(5, true),
+  percent(5, true)
+);
+ctx.stroke();
+setDefaults();
 }
