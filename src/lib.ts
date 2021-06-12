@@ -629,7 +629,26 @@ ctx.rect(
   percent(3, true)
 );
 } else if (label == "PVP") {
-
+ctx.rect(
+  x + percent(cx+16.5, true),
+  y + percent(cy+24, true),
+  percent(2, true),
+  percent(4, true)
+);
+ctx.rect(
+  x + percent(cx+14.5, true),
+  y + percent(cy+23, true),
+  percent(6, true),
+  percent(1, true)
+);
+ctx.moveTo(x + percent(cx+16, true), y + percent(cy+23, true));
+ctx.lineTo(x + percent(cx+16, true), y + percent(cy+15, true));
+ctx.lineTo(x + percent(cx+17.5, true), y + percent(cy+12, true));
+ctx.moveTo(x + percent(cx+19, true), y + percent(cy+23, true));
+ctx.lineTo(x + percent(cx+19, true), y + percent(cy+15, true));
+ctx.lineTo(x + percent(cx+17.5, true), y + percent(cy+12, true));
+ctx.moveTo(x + percent(cx+17.5, true), y + percent(cy+23, true));
+ctx.lineTo(x + percent(cx+17.5, true), y + percent(cy+12, true));
 }
 ctx.stroke();
 }

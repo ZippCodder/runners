@@ -71,7 +71,7 @@ export const GLOBAL_SETTINGS: {
 // Default canvas settings...
 
 export const DEFAULTS = {
-lineWidth: (window.innerWidth <= 800) ? 2:3,
+lineWidth: (self.innerWidth <= 800) ? (self.innerWidth <= 400) ? 2:2.5 :3,
 strokeStyle: "black",
 fillStyle: "white",
 globalAlpha: 1,
@@ -913,7 +913,7 @@ export const MAIN_CHARACTER = new MainCharacter(username);
 
 self.addEventListener("resize", () => {
   resize();
-  DEFAULTS.lineWidth = (window.innerWidth <= 800) ? 2:3,
+  DEFAULTS.lineWidth = (self.innerWidth <= 800) ? (self.innerWidth <= 400) ? 2:2.5:3,
   DEFAULTS.font = `${GLOBAL_SETTINGS.percent(5, true)} Arial`;
 });
 
