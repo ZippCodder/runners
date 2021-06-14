@@ -5,6 +5,8 @@ Spawn: 121*100
 Bench: 25*50 (can change orientation)
 Road: (Regular peice: 130*70, connectors: 70*70)
 Booth: 35*60
+Sign: 40*45
+Hospital: 200*190
 */
 
 /* REUSABLE OBJECTS ____________________________________*/
@@ -700,4 +702,157 @@ ctx.rect(
 );
 ctx.stroke();
 setDefaults();
+}
+
+/* Sign prop __________________________*/
+
+export function Sign(cx: number, cy: number,message: string): void {
+ let { percent } = GLOBAL_SETTINGS;
+ let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ let [ topText, bottomText ] = message.split(" ");
+ ctx.beginPath();
+ctx.fillRect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(40, true),
+  percent(20, true)
+);
+ctx.fillRect(
+  x + percent(cx+17.5, true),
+  y + percent(cy+20, true),
+  percent(5, true),
+  percent(25, true)
+);
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(40, true),
+  percent(20, true)
+);
+ctx.rect(
+  x + percent(cx+17.5, true),
+  y + percent(cy+20, true),
+  percent(5, true),
+  percent(25, true)
+);
+ctx.fillStyle = "black";
+ctx.font = `${percent(7, true)}px Arial`;
+if (topText && bottomText) {
+ctx.fillText(topText,x + percent(cx+20, true),y + percent(cy+8, true));
+ctx.fillText(bottomText,x + percent(cx+20, true),y + percent(cy+17, true));
+} else {
+ctx.fillText(topText,x + percent(cx+20, true),y + percent(cy+13, true));
+}
+ctx.stroke();
+setDefaults();
+}
+
+/* Hospital _____________________________*/
+
+export function Hospital(cx: number, cy: number): void {
+let { percent } = GLOBAL_SETTINGS;
+let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ctx.beginPath();
+// main peice
+ ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(200, true),
+  percent(150, true)
+);
+// porch
+ctx.rect(
+  x + percent(cx+55, true),
+  y + percent(cy+150, true),
+  percent(90, true),
+  percent(40, true)
+);  
+// door
+ctx.rect(
+  x + percent(cx+65, true),
+  y + percent(cy+110, true),
+  percent(70, true),
+  percent(40, true)
+);
+// handlebar 1 
+ctx.rect(
+  x + percent(cx+70, true),
+  y + percent(cy+135, true),
+  percent(25, true),
+  percent(3, true)
+);
+ ctx.moveTo(x + percent(cx+72, true), y + percent(cy+135, true));
+ctx.lineTo(x + percent(cx+72, true), y + percent(cy+133, true));
+ ctx.moveTo(x + percent(cx+93, true), y + percent(cy+135, true));
+ctx.lineTo(x + percent(cx+93, true), y + percent(cy+133, true));
+// handlebar 2
+ctx.rect(
+  x + percent(cx+105, true),
+  y + percent(cy+135, true),
+  percent(25, true),
+  percent(3, true)
+);
+ ctx.moveTo(x + percent(cx+107, true), y + percent(cy+135, true));
+ctx.lineTo(x + percent(cx+107, true), y + percent(cy+133, true));
+ ctx.moveTo(x + percent(cx+128, true), y + percent(cy+135, true));
+ctx.lineTo(x + percent(cx+128, true), y + percent(cy+133, true));
+// main window 1
+ctx.rect(
+  x + percent(cx+15, true),
+  y + percent(cy+100, true),
+  percent(35, true),
+  percent(20, true)
+);
+ctx.rect(
+  x + percent(cx+13, true),
+  y + percent(cy+120, true),
+  percent(39, true),
+  percent(3, true)
+);
+// main window 2
+ctx.rect(
+  x + percent(cx+150, true),
+  y + percent(cy+100, true),
+  percent(35, true),
+  percent(20, true)
+);
+ctx.rect(
+  x + percent(cx+148, true),
+  y + percent(cy+120, true),
+  percent(39, true),
+  percent(3, true)
+);
+// door window 1
+ctx.rect(
+  x + percent(cx+77.5, true),
+  y + percent(cy+115, true),
+  percent(10, true),
+  percent(15, true)
+);
+// door window 2
+ctx.rect(
+  x + percent(cx+112.5, true),
+  y + percent(cy+115, true),
+  percent(10, true),
+  percent(15, true)
+);
+// logo
+ctx.font = `${percent(35, true)}px Arial`;
+ctx.textAlign = "center";
+ctx.strokeText("+",x + percent(cx+100, true),y + percent(cy+105, true));
+// door line
+ctx.moveTo(x + percent(cx+100, true), y + percent(cy+110, true));
+ctx.lineTo(x + percent(cx+100, true), y + percent(cy+150, true));
+// building line
+ctx.moveTo(x + percent(cx, true),y + percent(cy+80, true));
+ctx.lineTo(x + percent(cx+200, true),y + percent(cy+80, true));
+ctx.stroke();
+setDefaults();
+}
+
+/* Fence ____________________________*/
+
+export function Fence(cx: number,cy: number): void {
+ let { percent } = GLOBAL_SETTINGS;
+ let { x, y } = GLOBAL_SETTINGS.mapAnchor;
 }

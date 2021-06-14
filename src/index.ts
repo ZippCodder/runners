@@ -9,7 +9,7 @@ import "./styles.css";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM_________________
 
-export let username: string = "Laya<0.2>";
+export let username: string = "Laya<1>";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
 
@@ -25,6 +25,7 @@ export const ctx = canvas.getContext("2d")!;
 type joystick = undefined | number;
 
 export const GLOBAL_SETTINGS: {
+  [index: string]: any;
   readonly charWidth: number;
   readonly charHeight: number;
   readonly controlSize: number;
@@ -71,7 +72,7 @@ export const GLOBAL_SETTINGS: {
 // Default canvas settings...
 
 export const DEFAULTS = {
-lineWidth: (self.innerWidth <= 800) ? (self.innerWidth <= 400) ? 2:2.5 :3,
+lineWidth: (self.innerWidth <= 800) ? (self.innerWidth <= 400) ? 2:3 :4,
 strokeStyle: "black",
 fillStyle: "white",
 globalAlpha: 1,
@@ -126,7 +127,7 @@ height;
 render;
 }
 
-import { Spawn, Bench, Road, Booth, Flower } from "./lib.ts";
+import { Spawn, Bench, Road, Booth, Flower, Sign, Hospital } from "./lib.ts";
 
 // Default map...
  
@@ -135,11 +136,14 @@ let DEFAULT_BACKGROUND = new Mapp(5000, 5000, () => {
   let { percent } = GLOBAL_SETTINGS;
   setDefaults();
   ctx.beginPath();
+// Spawn area ...
 Spawn(-60.5, -50);
+// Benches...
 Bench(85.5,-25,"left");
 Bench(-105.5,-25,"right");
 Bench(-25,-95,"down");
 Bench(-25,75,"up");
+// Roadwork...
 Road(-65,-264.5,"U_conn");
 Road(-195,-264.5,"horizontal");
 Road(65,-264.5,"horizontal");
@@ -156,6 +160,8 @@ Road(-265,65.5,"vertical");
 Road(-265,-64.5,"L_conn");
 Road(-265,-194.5,"vertical");
 Road(-265,-264.5,"R_corner");
+Road(-35,-394.5,"vertical");
+// Booths...
 Booth(70.5,-170,"LOTTERY");
 Booth(-105.5,-170,"RANKINGS");
 Booth(-17.5,-170,"PVP");
@@ -167,7 +173,7 @@ percent(251, true),
 percent(230, true)
 );
 ctx.stroke();
-// Center stripe
+// Flowers...
 Flower(52.5,-153);
 Flower(-32,-125);
 Flower(-128.5,-170);
@@ -186,6 +192,10 @@ Flower(156,-167);
 Flower(0,161);
 Flower(-134.5,162);
 Flower(-146,23);
+// Signs...
+Sign(100,100,"TOWN SQUARE");
+Sign(65,-324.5,"HOSPITAL");
+Hospital(-100,-584.5);
 });
 
 // Class for creating joysticks...
@@ -492,32 +502,32 @@ recalculate(x?: number, y?: number): void {
     ctx.lineWidth = DEFAULTS.lineWidth*2;
     if (this.handPos == "middle") {
       ctx.strokeRect(
-        x - this.handWidth - 1,
+        x - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         y + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
       ctx.strokeRect(
-        x + this.width + 1,
+        x + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         y + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
       ctx.fillRect(
-        x - this.handWidth - 1,
+        x - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         y + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
       ctx.fillRect(
-        x + this.width + 1,
+        x + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         y + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
     } else if (this.handPos == "top") {
       ctx.strokeRect(
-        x - this.handWidth - 1,
+        x - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 -
@@ -526,7 +536,7 @@ recalculate(x?: number, y?: number): void {
         this.handHeight
       );
       ctx.strokeRect(
-        x + this.width + 1,
+        x + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 +
@@ -535,7 +545,7 @@ recalculate(x?: number, y?: number): void {
         this.handHeight
       );
       ctx.fillRect(
-        x - this.handWidth - 1,
+        x - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 -
@@ -544,7 +554,7 @@ recalculate(x?: number, y?: number): void {
         this.handHeight
       );
       ctx.fillRect(
-        x + this.width + 1,
+        x + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 +
@@ -554,7 +564,7 @@ recalculate(x?: number, y?: number): void {
       );
     } else {
       ctx.strokeRect(
-        x - this.handWidth - 1,
+        x - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 +
@@ -563,7 +573,7 @@ recalculate(x?: number, y?: number): void {
         this.handHeight
       );
       ctx.strokeRect(
-        x + this.width + 1,
+        x + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 -
@@ -572,7 +582,7 @@ recalculate(x?: number, y?: number): void {
         this.handHeight
       );
       ctx.fillRect(
-        x - this.handWidth - 1,
+        x - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 +
@@ -581,7 +591,7 @@ recalculate(x?: number, y?: number): void {
         this.handHeight
       );
       ctx.fillRect(
-        x + this.width + 1,
+        x + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         y +
           this.height / 2 -
           this.handHeight / 2 -
@@ -720,32 +730,32 @@ class MainCharacter implements Characters {
     ctx.lineWidth = DEFAULTS.lineWidth*2;
     if (this.handPos == "middle") {
       ctx.strokeRect(
-        this.fixedX - this.handWidth - 1,
+        this.fixedX - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
       ctx.strokeRect(
-        this.fixedX + this.width + 1,
+        this.fixedX + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
       ctx.fillRect(
-        this.fixedX - this.handWidth - 1,
+        this.fixedX - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
       ctx.fillRect(
-        this.fixedX + this.width + 1,
+        this.fixedX + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY + this.height / 2 - this.handHeight / 2,
         this.handWidth,
         this.handHeight
       );
     } else if (this.handPos == "top") {
       ctx.strokeRect(
-        this.fixedX - this.handWidth - 1,
+        this.fixedX - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 -
@@ -754,7 +764,7 @@ class MainCharacter implements Characters {
         this.handHeight
       );
       ctx.strokeRect(
-        this.fixedX + this.width + 1,
+        this.fixedX + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 +
@@ -763,7 +773,7 @@ class MainCharacter implements Characters {
         this.handHeight
       );
       ctx.fillRect(
-        this.fixedX - this.handWidth - 1,
+        this.fixedX - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 -
@@ -772,7 +782,7 @@ class MainCharacter implements Characters {
         this.handHeight
       );
       ctx.fillRect(
-        this.fixedX + this.width + 1,
+        this.fixedX + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 +
@@ -782,7 +792,7 @@ class MainCharacter implements Characters {
       );
     } else {
       ctx.strokeRect(
-        this.fixedX - this.handWidth - 1,
+        this.fixedX - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 +
@@ -791,7 +801,7 @@ class MainCharacter implements Characters {
         this.handHeight
       );
       ctx.strokeRect(
-        this.fixedX + this.width + 1,
+        this.fixedX + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 -
@@ -800,7 +810,7 @@ class MainCharacter implements Characters {
         this.handHeight
       );
       ctx.fillRect(
-        this.fixedX - this.handWidth - 1,
+        this.fixedX - this.handWidth - GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 +
@@ -809,7 +819,7 @@ class MainCharacter implements Characters {
         this.handHeight
       );
       ctx.fillRect(
-        this.fixedX + this.width + 1,
+        this.fixedX + this.width + GLOBAL_SETTINGS.percent(0.5, true),
         this.fixedY +
           this.height / 2 -
           this.handHeight / 2 -
@@ -913,7 +923,7 @@ export const MAIN_CHARACTER = new MainCharacter(username);
 
 self.addEventListener("resize", () => {
   resize();
-  DEFAULTS.lineWidth = (self.innerWidth <= 800) ? (self.innerWidth <= 400) ? 2:2.5:3,
+  DEFAULTS.lineWidth = (self.innerWidth <= 800) ? (self.innerWidth <= 400) ? 2:3:4,
   DEFAULTS.font = `${GLOBAL_SETTINGS.percent(5, true)} Arial`;
 });
 
