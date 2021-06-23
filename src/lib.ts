@@ -7,6 +7,7 @@ Road: (Regular peice: 130*70, connectors: 70*70)
 Booth: 35*60
 Sign: 40*45
 Hospital: 200*190
+Fence: (horizontal: 50*50, vertical: 4*100, segment: 4*50)
 */
 
 /* REUSABLE OBJECTS ____________________________________*/
@@ -851,8 +852,93 @@ setDefaults();
 }
 
 /* Fence ____________________________*/
+type fence = "horizontal" | "vertical" | "segment";
 
-export function Fence(cx: number,cy: number): void {
+export function Fence(cx: number,cy: number,dir: fence): void {
  let { percent } = GLOBAL_SETTINGS;
  let { x, y } = GLOBAL_SETTINGS.mapAnchor;
+ ctx.beginPath();
+if (dir == "horizontal") {
+// First plank
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+10, true), y + percent(cy+40, true));
+  ctx.lineTo(x + percent(cx+10, true), y + percent(cy+10, true));
+  ctx.lineTo(x + percent(cx+5, true), y + percent(cy, true));
+   ctx.lineTo(x + percent(cx, true), y + percent(cy+10, true)); 
+  ctx.fill();
+// Second plank
+ ctx.moveTo(x + percent(cx+10, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx+10, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+20, true), y + percent(cy+40, true));
+  ctx.lineTo(x + percent(cx+20, true), y + percent(cy+10, true));
+  ctx.lineTo(x + percent(cx+15, true), y + percent(cy, true));
+   ctx.lineTo(x + percent(cx+10, true), y + percent(cy+10, true)); 
+  ctx.fill();
+// Third plank
+ ctx.moveTo(x + percent(cx+20, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx+20, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+30, true), y + percent(cy+40, true));
+  ctx.lineTo(x + percent(cx+30, true), y + percent(cy+10, true));
+  ctx.lineTo(x + percent(cx+25, true), y + percent(cy, true));
+   ctx.lineTo(x + percent(cx+20, true), y + percent(cy+10, true)); 
+  ctx.fill();
+// Fourth plank
+ ctx.moveTo(x + percent(cx+30, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx+30, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+40, true), y + percent(cy+40, true));
+  ctx.lineTo(x + percent(cx+40, true), y + percent(cy+10, true));
+  ctx.lineTo(x + percent(cx+35, true), y + percent(cy, true));
+   ctx.lineTo(x + percent(cx+30, true), y + percent(cy+10, true)); 
+  ctx.fill();
+// Fifth plank
+ ctx.moveTo(x + percent(cx+40, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx+40, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+50, true), y + percent(cy+40, true));
+  ctx.lineTo(x + percent(cx+50, true), y + percent(cy+10, true));
+  ctx.lineTo(x + percent(cx+45, true), y + percent(cy, true));
+   ctx.lineTo(x + percent(cx+40, true), y + percent(cy+10, true)); 
+  ctx.fill();
+} else if (dir == "vertical") {
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(4, true),
+  percent(50, true)
+);
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+10, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+20, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+20, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+30, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+30, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+40, true));
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy+50, true),
+  percent(4, true),
+  percent(50, true)
+);
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+60, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+60, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+70, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+70, true));
+} else if (dir == "segment") {
+ctx.rect(
+  x + percent(cx, true),
+  y + percent(cy, true),
+  percent(4, true),
+  percent(50, true)
+);
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+10, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+10, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+20, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+20, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+30, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+30, true));
+ ctx.moveTo(x + percent(cx, true), y + percent(cy+40, true));
+ ctx.lineTo(x + percent(cx+4, true), y + percent(cy+40, true));
+}
+ ctx.stroke();
 }

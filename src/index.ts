@@ -9,7 +9,7 @@ import "./styles.css";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM_________________
 
-export let username: string = "Laya<1>";
+export let username: string = "Laya<0.1>";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
 
@@ -127,7 +127,7 @@ height;
 render;
 }
 
-import { Spawn, Bench, Road, Booth, Flower, Sign, Hospital } from "./lib.ts";
+import { Spawn, Bench, Road, Booth, Flower, Sign, Hospital, Fence } from "./lib.ts";
 
 // Default map...
  
@@ -194,8 +194,44 @@ Flower(-134.5,162);
 Flower(-146,23);
 // Signs...
 Sign(100,100,"TOWN SQUARE");
-Sign(65,-324.5,"HOSPITAL");
+Sign(65,-322.5,"HOSPITAL");
 Hospital(-100,-584.5);
+Fence(-128.5,-485.5,"vertical");
+Fence(-128.5,-535.5,"segment");
+Fence(-128.5,-585.5,"segment");
+Fence(-128.5,-635.5,"segment");
+Fence(-124.5,-425.5,"horizontal");
+
+Fence(-124.5,-635.5,"horizontal");
+Fence(-74.5,-635.5,"horizontal");
+Fence(-24.5,-635.5,"horizontal");
+Fence(25.5,-635.5,"horizontal");
+Fence(75.5,-635.5,"horizontal");
+Fence(75.5,-425.5,"horizontal");
+
+Fence(125.5,-635.5,"segment");
+Fence(125.5,-585.5,"segment");
+Fence(125.5,-535.5,"segment");
+Fence(125.5,-485.5,"segment");
+Fence(125.5,-435.5,"segment");
+
+Fence(-74.5,-425.5,"segment");
+Fence(-74.5,-375.5,"vertical");
+Fence(-124.5,-315.5,"horizontal");
+Fence(-174.5,-315.5,"horizontal");
+Fence(-224.5,-315.5,"horizontal");
+Fence(-274.5,-315.5,"horizontal");
+Fence(-324.5,-315.5,"horizontal");
+
+Fence(71.5,-425.5,"vertical");
+Fence(75.5,-365.5,"horizontal");
+Fence(125.5,-365.5,"horizontal");
+Fence(175.5,-365.5,"horizontal");
+Fence(225.5,-365.5,"horizontal");
+Fence(275.5,-365.5,"horizontal");
+Fence(325.5,-365.5,"segment");
+Fence(325.5,-315.5,"segment");
+Fence(325.5,-265.5,"segment");
 });
 
 // Class for creating joysticks...
@@ -221,6 +257,7 @@ class CONTROL implements Control {
   distance = 0;
   touch: number | undefined = undefined;
   mouseCenter = { x: 0, y: 0 };
+
   render() {
     setDefaults();
     ctx.moveTo(this.mouseCenter.x, this.mouseCenter.y);
@@ -927,7 +964,8 @@ self.addEventListener("resize", () => {
   DEFAULTS.font = `${GLOBAL_SETTINGS.percent(5, true)} Arial`;
 });
 
-function resize(init?: boolean): void {
+function resize(init?: boolean): void { 
+
   canvas.style.width = self.innerWidth + "px";
   canvas.style.height = self.innerHeight + "px";
   canvas.width = self.innerWidth;
@@ -1023,7 +1061,7 @@ function render(): void {
   }
 
   MAIN_CHARACTER.render();
-
+// Run if left joystick is active
   if (LEFT_CONTROL?.active) {
     LEFT_CONTROL.render();
     let { mapAnchor, speed, percent } = GLOBAL_SETTINGS!;
@@ -1049,11 +1087,11 @@ function render(): void {
         break;
     }
  }
-  }
-
+  } 
+// Render right joystick if active
   if (RIGHT_CONTROL?.active) {
     RIGHT_CONTROL.render();
-  }
+  } 
 
 update();
 
