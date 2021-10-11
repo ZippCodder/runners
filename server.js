@@ -3,7 +3,7 @@ const io = require("socket.io")();
 io.attach(server);
 const PLAYERS = {};
 const IDS = {};
-const port = (process.env.NODE_ENV ?? 5000);
+const port = (process.env.PORT ?? 5000);
 
 io.on("connection",(socket) => {
 
