@@ -9,7 +9,7 @@ import "./styles.css";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM_________________
 
-export let username: string = "Laya<0.2>";
+export let username: string = "Laya<5>";
 
 // SET PLAYERS USERNAME BEFORE ENTERING ROOM__________________
 
@@ -48,7 +48,7 @@ export const GLOBAL_SETTINGS: {
   scale: 3,
   maxWidth: 10000,
   maxHeight: 10000,
-  speedFactor: 5.0,
+  speedFactor: 5,
   speed: undefined,
   width: self.innerWidth,
   height: self.innerHeight,
