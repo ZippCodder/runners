@@ -48,7 +48,7 @@ export const GLOBAL_SETTINGS: {
   scale: 3,
   maxWidth: 10000,
   maxHeight: 10000,
-  speedFactor: 0.1,
+  speedFactor: 5.0,
   speed: undefined,
   width: self.innerWidth,
   height: self.innerHeight,
